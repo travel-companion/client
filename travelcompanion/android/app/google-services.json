@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1397283656",
+    "firebase_url": "https://travel-companion-a27a6-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "travel-companion-a27a6",
+    "storage_bucket": "travel-companion-a27a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1397283656:android:180dcc061fcc282e3e717d",
+        "android_client_info": {
+          "package_name": "tn.rbk.travelcompanion"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1397283656-bco3qvihh5gml7vjv5ba20ni5p4b01o5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "tn.rbk.travelcompanion",
+            "certificate_hash": "af962e9d2c9de620fc45613a9d61ae5254ed8a09"
+          }
+        },
+        {
+          "client_id": "1397283656-js17k61ugv95igcueltrp1439aa4lv18.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1wAoFYTdJ-5yV9y8aIzt_X_MgY3obKAY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1397283656-js17k61ugv95igcueltrp1439aa4lv18.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
