@@ -1,14 +1,26 @@
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:travelcompanion/screensLoginsignup/login/login.dart';
 import 'package:travelcompanion/componenetsloginsignup/background.dart';
 import 'package:travelcompanion/commonloginSignup/theme_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hexcolor/hexcolor.dart';
-
-class RegisterScreen extends StatelessWidget {
+import '../../homeScreen/home.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+class RegisterScreen extends StatefulWidget {
   @override
+  _RegisterScreenState createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  @override
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  TextEditingController userNameController = TextEditingController();
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    var size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Background(
@@ -32,7 +44,8 @@ class RegisterScreen extends StatelessWidget {
               color: const Color.fromARGB(255, 246, 240, 176),
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
-              child: const TextField(
+              child: TextField(
+                controller: userNameController,
                 decoration: InputDecoration(labelText: "Name"),
               ),
             ),
@@ -42,7 +55,8 @@ class RegisterScreen extends StatelessWidget {
               color: const Color.fromARGB(255, 246, 240, 176),
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
-              child: const TextField(
+              child: TextField(
+                controller: emailController,
                 decoration: InputDecoration(labelText: "E-mail"),
               ),
             ),
@@ -51,7 +65,8 @@ class RegisterScreen extends StatelessWidget {
               color: const Color.fromARGB(255, 246, 240, 176),
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
-              child: const TextField(
+              child: TextField(
+                controller: passwordController,
                 decoration: InputDecoration(labelText: "Password"),
                 obscureText: true,
               ),
@@ -61,7 +76,19 @@ class RegisterScreen extends StatelessWidget {
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
               child: RaisedButton(
-                onPressed: () {},
+                onPressed: () {
+                  FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
+                          email: emailController.text,
+                          password: passwordController.text)
+                      .then((value) {
+                    print("Created New Account");
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                  }).onError((error, stackTrace) {
+                    print("Error ${error.toString()}");
+                  });
+                },
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(80.0)),
                 textColor: Colors.black,
@@ -120,13 +147,7 @@ class RegisterScreen extends StatelessWidget {
                       color: HexColor("#EC2D2F"),
                     ),
                     onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return ThemeHelper().alartDialog("Google Plus",
-                              "You tap on GooglePlus social icon.", context);
-                        },
-                      );
+                      // signInWithGoogle();
                     }),
                 const SizedBox(
                   width: 30.0,
@@ -158,3 +179,14 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 }
+
+// Future<UserCredential> signInWithGoogle() async {
+//   final GoogleSignInAccount googleuser = await GoogleSignIn().signIn();
+
+//   final GoogleSignInAuthentication googleAuth = await googleuser.authentication;
+
+//   final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+//       idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+//   Fluttertoast.showToast(msg: "Account created");
+//   return await FirebaseAuth.instance.signInWithCredential(credential);
+// }
