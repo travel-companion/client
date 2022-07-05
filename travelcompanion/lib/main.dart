@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:travelcompanion/map_side/main_map.dart';
 
 import 'Chat_Side/main_chat.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'ScreensLoginsignup/register/register.dart';
 import 'circuits/circuit.dart';
@@ -10,6 +11,8 @@ import "userProfil/userProfil.dart";
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+     await Firebase.initializeApp();
+
   runApp(MyApp());
 }
 
