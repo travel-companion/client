@@ -8,13 +8,15 @@ class Post extends StatefulWidget {
   cardItem createState() => new cardItem();
 }
 
-class cardItem extends State<Post> {
-  _pressed() {
-    setState(() {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Comment()));
-    });
-  }
+
+// class cardItem extends State<Post> {
+//   _pressed() {
+//     setState(() {
+//       Navigator.push(
+//           context, MaterialPageRoute(builder: (context) => Comment()));
+//     });
+//   }
+
 
   @override
   Widget build(BuildContext context) {
