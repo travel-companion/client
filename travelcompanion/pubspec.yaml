@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.3 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -29,17 +29,15 @@ environment:
 dependencies:
   cached_network_image: ^3.2.1
   cloud_firestore: ^3.2.1
-  comment_box: ^0.0.17
-  cupertino_icons: ^1.0.2
+  cupertino_icons: ^1.0.5
   dropdown_search: ^5.0.2
   faker: ^2.0.0
-  firebase_analytics: ^9.1.10
-  firebase_auth: ^3.3.20
+  firebase_analytics: ^9.1.12
+  firebase_auth: ^3.4.1
   firebase_core: ^1.19.1
-  firebase_storage: ^10.3.1
   flutter:
     sdk: flutter
-  font_awesome_flutter: ^9.1.0
+  font_awesome_flutter: ^10.1.0
   geoflutterfire: ^3.0.3
   geolocator: ^9.0.0
   google_fonts: ^3.0.1
@@ -49,13 +47,16 @@ dependencies:
   http: ^0.13.4
   jiffy: ^5.0.0
   location: ^4.4.0
-  otp_text_field: ^1.1.1
+  otp_text_field: ^1.1.3
   permission_handler: ^10.0.0
   rxdart: ^0.27.4
   searchfield: ^0.6.6
+  comment_box: ^0.0.17
+  provider: ^6.0.3
+  fluttertoast: ^8.0.9
 
 dev_dependencies:
-  flutter_lints: ^1.0.0
+  flutter_lints: ^1.0.4
   flutter_test:
     sdk: flutter
 

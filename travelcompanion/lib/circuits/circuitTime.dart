@@ -2,7 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class CircuitTime extends StatefulWidget {
-  const CircuitTime({Key? key}) : super(key: key);
+  final value;
+  const CircuitTime({
+    Key? key,
+    required this.value,
+  }) : super(key: key);
 
   @override
   State<CircuitTime> createState() => _CircuitTimeState();
@@ -17,7 +21,7 @@ class _CircuitTimeState extends State<CircuitTime> {
     await FirebaseFirestore.instance.collection('lines').get().then(
           (snapshot) => snapshot.docs.forEach(
             (document) {
-              print(document.data()['times']);
+              // print(document.data()['times']);
               for (var i = 0; i < document.data()['times'].length; i++) {
                 times.add(document.data()['times'][i]['t']);
               }

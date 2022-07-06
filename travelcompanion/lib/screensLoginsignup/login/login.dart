@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:travelcompanion/ScreensLoginsignup/register/register.dart';
 import 'package:travelcompanion/componenetsloginsignup/background.dart';
 import 'package:travelcompanion/commonloginSignup/theme_helper.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hexcolor/hexcolor.dart';
-
+import 'package:provider/provider.dart';
+import 'package:travelcompanion/main.dart';
 import '../../userProfil/userProfil.dart';
+import "../resetPwd/Res.dart";
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -19,6 +23,9 @@ class _LoginScreenState extends State<LoginScreen> {
           context, MaterialPageRoute(builder: (context) => UserProfil()));
     });
   }
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +55,10 @@ class _LoginScreenState extends State<LoginScreen> {
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
               color: const Color.fromARGB(255, 246, 240, 176),
-              child: const TextField(
+              child: TextField(
+                controller: emailController,
                 decoration: InputDecoration(
-                  labelText: "Username",
+                  labelText: "Email",
                   fillColor: Colors.amber,
                 ),
               ),
@@ -62,7 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
               color: const Color.fromARGB(255, 246, 240, 176),
               alignment: Alignment.center,
               margin: const EdgeInsets.symmetric(horizontal: 40),
-              child: const TextField(
+              child: TextField(
+                controller: passwordController,
                 decoration: InputDecoration(
                     labelText: "Password",
                     iconColor: Color.fromARGB(255, 235, 226, 131)),
@@ -73,10 +82,14 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               alignment: Alignment.centerRight,
               margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-              child: const Text(
-                "Forgot your password?",
-                style: TextStyle(
-                    fontSize: 12, color: Color.fromARGB(255, 234, 235, 192)),
+              child: TextButton(
+                child: const Text(
+                  "Forgot Password?",
+                  style: TextStyle(color: Colors.white70),
+                  textAlign: TextAlign.right,
+                ),
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ResetScreen())),
               ),
             ),
 
@@ -87,7 +100,17 @@ class _LoginScreenState extends State<LoginScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
               child: RaisedButton(
                 onPressed: () {
-                  ClickMe();
+                  FirebaseAuth.instance
+                      .signInWithEmailAndPassword(
+                          email: emailController.text,
+                          password: passwordController.text)
+                      .then((value) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => UserProfil()));
+                  }).onError((error, stackTrace) {
+                    print("Error ${error.toString()}");
+                  });
+                  // ClickMe();
                 },
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(80.0)),
@@ -148,13 +171,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: HexColor("#EC2D2F"),
                     ),
                     onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return ThemeHelper().alartDialog("Google Plus",
-                              "You can sign up with Google Plus.", context);
-                        },
-                      );
+                      () async {
+                        // await signInWithGoogle();
+                      };
                     }),
                 const SizedBox(
                   width: 30.0,
