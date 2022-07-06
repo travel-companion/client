@@ -1,28 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 import '../../comment.dart';
 import 'dart:developer';
 
-// class Post extends StatefulWidget {
-//   final dynamic onePost;
 
-//   const onePost ({ Key? key, this.onePost }): super(key: key);
-//   @override
-//   cardItem createState() => new cardItem();
-// }
-
-// class cardItem extends State<Post> {
-//   _pressed() {
-//     setState(() {
-//       Navigator.push(
-//           context, MaterialPageRoute(builder: (context) => Comment()));
-//     });
-//   }
+DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
 
 @override
 Widget CardItemTest(
-    dynamic data, dynamic content, dynamic user, List<dynamic> comments) {
+    dynamic time, dynamic content, dynamic user, List<dynamic> comments,dynamic pic) {
   log('user: $user / comments:$comments');
   return Card(
     child: Container(
@@ -33,16 +20,16 @@ Widget CardItemTest(
             ListTile(
               leading: CircleAvatar(
                 radius: 20,
-                backgroundImage: NetworkImage(data['pic']),
+                backgroundImage: NetworkImage(pic),
               ),
               title: Text(
-                data['name'],
+                user,
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
               subtitle: Text(
-                data['time'],
+                time.toString(),
                 style: TextStyle(
                   color: Color.fromARGB(255, 118, 113, 113),
                 ),
