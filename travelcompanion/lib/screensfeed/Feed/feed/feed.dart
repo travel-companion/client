@@ -57,6 +57,7 @@ class _FeedPublicationState extends State<FeedPublication> {
   Widget build(BuildContext context) {
     CollectionReference posts = FirebaseFirestore.instance.collection("posts");
     Size size = MediaQuery.of(context).size;
+
     return MaterialApp(
         theme: ThemeData(),
         debugShowCheckedModeBanner: false,

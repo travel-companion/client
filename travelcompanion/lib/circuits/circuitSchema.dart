@@ -1,16 +1,19 @@
 class Circuit {
-  final String depart;
-  final String dest;
-  final String ref;
+  final String name;
 
-  Circuit({
-    required this.depart,
-    required this.dest,
-    required this.ref,
+  const Circuit({
+    required this.name,
   });
 
-  Map<String, dynamic> toJson() => {'depart': depart, 'dest': dest, 'ref': ref};
+  // factory Circuit.fromJson(Map<String, dynamic> json) =>
+  //     Circuit(name: json['name']);
+  // @override
+  // bool operator ==(Object other) =>
+  //     identical(this, other) ||
+  //     other is Circuit &&
+  //         runtimeType == other.runtimeType &&
+  //         name == other.name;
 
-  static Circuit fromJson(Map<String, dynamic> json) =>
-      Circuit(depart: json['depart'], dest: json['dest'], ref: json['ref']);
+  // @override
+  // int get hashCode => name.hashCode;
 }
