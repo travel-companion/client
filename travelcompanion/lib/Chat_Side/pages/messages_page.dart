@@ -80,6 +80,23 @@ class _MessageTitle extends StatelessWidget {
               ),
             ],
           ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const SizedBox(
+                height: 4,
+              ),
+              Text(
+                messageData.dateMessage.toUpperCase(),
+                style: const TextStyle(
+                    fontSize: 10, color: Color.fromARGB(255, 201, 191, 105)),
+              )
+            ],
+          ),
         )
       ],
     );

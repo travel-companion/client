@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -32,6 +34,8 @@ class _CircuitTimeState extends State<CircuitTime> {
 
   @override
   Widget build(BuildContext context) {
+    var value = widget.value;
+    var times = log('value:$value');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 250, 187, 39),
@@ -53,7 +57,7 @@ class _CircuitTimeState extends State<CircuitTime> {
               future: getTimes(),
               builder: (context, snapshot) {
                 return ListView.builder(
-                    itemCount: times.length,
+                    itemCount: widget.value["times"].length,
                     itemBuilder: (context, index) {
                       return Card(
                         color: const Color.fromARGB(255, 255, 197, 37),
@@ -63,14 +67,23 @@ class _CircuitTimeState extends State<CircuitTime> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: ListTile(
-                          leading: const CircleAvatar(
-                              backgroundColor: Color.fromARGB(255, 255, 153, 0),
-                              child: Icon(
+                          leading: CircleAvatar(
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 153, 0),
+                            child: IconButton(
+                              onPressed: (() {
+                                var chatRoom =
+                                    value['ref'] + value['times'][index]['t'];
+                                log('test:$chatRoom');
+                              }),
+                              icon: const Icon(
                                 Icons.arrow_upward,
-                                color: Color.fromARGB(255, 255, 238, 0),
-                              )),
+                                color: Color.fromARGB(255, 255, 230, 0),
+                              ),
+                            ),
+                          ),
                           title: Text(
-                            times[index],
+                            widget.value['times'][index]['t'],
                             style: const TextStyle(color: Colors.white),
                           ),
                           trailing: const Icon(Icons.train),

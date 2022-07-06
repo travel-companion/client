@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:travelcompanion/map_side/main_map.dart';
@@ -9,17 +8,19 @@ import 'homeScreen/home.dart';
 import "screensfeed/Feed/feed/feed.dart";
 import "userProfil/userProfil.dart";
 import "package:google_sign_in/google_sign_in.dart";
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptions(
+    options: const FirebaseOptions(
       apiKey: "AIzaSyB1wAoFYTdJ-5yV9y8aIzt_X_MgY3obKAY",
       appId: "1:1397283656:android:180dcc061fcc282e3e717d",
       messagingSenderId: "XXX",
       projectId: "travel-companion-a27a6",
     ),
   );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   runApp(MyApp());
 }
 
