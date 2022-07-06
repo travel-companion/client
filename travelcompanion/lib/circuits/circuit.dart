@@ -12,14 +12,18 @@ class CircuitList extends StatefulWidget {
 class _CircuitListState extends State<CircuitList> {
   // Line storage
   List<String> lines = [];
+  List<String> times = [];
 
   //get lines
   Future getLineIDs() async {
     await FirebaseFirestore.instance.collection('lines').get().then(
           (snapshot) => snapshot.docs.forEach(
             (document) {
-              print(document.data()['times'][0]['t']);
+              print(document.id);
               lines.add(document.data()['ref']);
+              for (var i = 0; i < document.data()['times'].length; i++) {
+                times.add(document.data()['times'][i]['t']);
+              }
             },
           ),
         );
@@ -79,7 +83,7 @@ class _CircuitListState extends State<CircuitList> {
                                   onPressed: () {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
-                                      return const CircuitTime();
+                                      return CircuitTime(value: times);
                                     }));
                                   },
                                   icon: const Icon(Icons.arrow_upward))),
