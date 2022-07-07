@@ -109,7 +109,8 @@ class _FeedPublicationState extends State<FeedPublication> {
                           data.docs[index]['content'],
                           data.docs[index]['user'],
                           data.docs[index]['comments'],
-                          data.docs[index]['pic']
+                          data.docs[index]['pic'],
+                          data.docs[index].id
                           )),
                     );
                   },

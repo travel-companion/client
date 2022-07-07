@@ -9,8 +9,8 @@ DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
 
 @override
 Widget CardItemTest(
-    dynamic time, dynamic content, dynamic user, List<dynamic> comments,dynamic pic) {
-  log('user: $user / comments:$comments');
+    dynamic time, dynamic content, dynamic user, List<dynamic> comments,dynamic pic,String id) {
+  log('user: $user / id:$id');
   return Card(
     child: Container(
         color: Color.fromARGB(255, 47, 46, 43),
@@ -41,7 +41,7 @@ Widget CardItemTest(
             ),
             Row(
               children: <Widget>[
-                button(c:comments),
+                button(c:comments,id:id),
                 SizedBox(width: 8.0),
                 Text(
                   "comment",
@@ -58,19 +58,21 @@ Widget CardItemTest(
 
 class button extends StatelessWidget {
       final dynamic c;
+      final dynamic id;
+
   const button({
     this.c,
+    this.id,
     Key? key,
   }) : super(key: key);
   
 
   @override
   Widget build(BuildContext context) {
-    log('test pass $c');
     return IconButton(
         onPressed: ()=>{
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => Comment()))         
+                MaterialPageRoute(builder: (context) => Comment(c:c,id:id)))         
         },
         icon: Icon(
           Icons.comment,
