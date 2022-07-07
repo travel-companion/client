@@ -2,14 +2,13 @@ import 'themes.dart';
 import 'package:flutter/material.dart';
 import 'screens/screens.dart';
 
-void main() {
-  runApp(const Chat());
-}
-
 final appTheme = AppTheme();
 
 class Chat extends StatelessWidget {
-  const Chat({Key? key}) : super(key: key);
+  final name;
+  final roomNameDesu;
+  const Chat({required this.roomNameDesu, this.name, Key? key})
+      : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -19,7 +18,10 @@ class Chat extends StatelessWidget {
       darkTheme: appTheme.dark(),
       themeMode: ThemeMode.dark,
       title: 'Chat',
-      home: HomeScreen(),
+      home: ChatHome(
+        roomName: name,
+        roomNameDesu: roomNameDesu,
+      ),
     );
   }
 }

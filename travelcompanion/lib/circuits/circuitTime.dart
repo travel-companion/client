@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../Chat_Side/main_chat.dart';
 
 class CircuitTime extends StatefulWidget {
   final value;
@@ -74,7 +75,15 @@ class _CircuitTimeState extends State<CircuitTime> {
                               onPressed: (() {
                                 var chatRoom =
                                     value['ref'] + value['times'][index]['t'];
+                                var roomNameDesu = value['ref'];
                                 log('test:$chatRoom');
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return Chat(
+                                    name: chatRoom,
+                                    roomNameDesu: roomNameDesu,
+                                  );
+                                }));
                               }),
                               icon: const Icon(
                                 Icons.arrow_upward,

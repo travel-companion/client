@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:travelcompanion/userProfil/userProfil.dart';
+
 import '../pages/calls_page.dart';
 import '../pages/contacts_page.dart';
 import '../pages/messages_page.dart';
@@ -7,12 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../themes.dart';
 import '../dummy.dart';
-import 'package:travelcompanion/userProfil/userProfil.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({Key? key}) : super(key: key);
+class ChatHome extends StatelessWidget {
+  final roomName;
+  var roomNameDesu;
+  ChatHome({required this.roomNameDesu, this.roomName, Key? key})
+      : super(key: key);
   final ValueNotifier<int> pageIndex = ValueNotifier(0);
-  final ValueNotifier<String> title = ValueNotifier('MESSAGES');
+  late ValueNotifier<String> title = ValueNotifier(roomNameDesu);
   final pages = [
     const MessagesPage(),
     ReportPage(),
@@ -20,7 +26,7 @@ class HomeScreen extends StatelessWidget {
     const ContactsPage(),
   ];
 
-  final pageTitles = const ['Messages', 'Report Incident', 'Calls', 'Contacts'];
+  late var pageTitles = [roomNameDesu, 'Report Incident', 'Calls', 'Contacts'];
 
   void _onNavigationItemSelected(i) {
     title.value = pageTitles[i];
@@ -51,8 +57,15 @@ class HomeScreen extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: BackButton(
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => UserProfil()));
+                log('value$roomNameDesu');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return UserProfil();
+                    },
+                  ),
+                );
               },
             ),
             // child: IconBackground(
@@ -103,39 +116,43 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        top: false,
-        bottom: true,
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-          _NavigationBarItem(
-            onTap: handleItemSelected,
-            index: 0,
-            lable: 'Messages',
-            icon: CupertinoIcons.bubble_left_bubble_right_fill,
-            isSelected: (selectedIndex == 0),
-          ),
-          _NavigationBarItem(
-            onTap: handleItemSelected,
-            index: 1,
-            lable: 'Report Incident',
-            icon: CupertinoIcons.exclamationmark_circle_fill,
-            isSelected: (selectedIndex == 1),
-          ),
-          _NavigationBarItem(
-            onTap: handleItemSelected,
-            index: 2,
-            lable: 'Calls',
-            icon: CupertinoIcons.phone_fill,
-            isSelected: (selectedIndex == 2),
-          ),
-          _NavigationBarItem(
-            onTap: handleItemSelected,
-            index: 3,
-            lable: 'Contacts ',
-            icon: CupertinoIcons.person_2_fill,
-            isSelected: (selectedIndex == 3),
-          )
-        ]));
+    return Card(
+      margin: const EdgeInsets.all(0),
+      child: SafeArea(
+          top: false,
+          bottom: false,
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+            _NavigationBarItem(
+              onTap: handleItemSelected,
+              index: 0,
+              lable: 'Messages',
+              icon: CupertinoIcons.bubble_left_bubble_right_fill,
+              isSelected: (selectedIndex == 0),
+            ),
+            _NavigationBarItem(
+              onTap: handleItemSelected,
+              index: 1,
+              lable: 'Report Incident',
+              icon: CupertinoIcons.exclamationmark_circle_fill,
+              isSelected: (selectedIndex == 1),
+            ),
+            _NavigationBarItem(
+              onTap: handleItemSelected,
+              index: 2,
+              lable: 'Calls',
+              icon: CupertinoIcons.phone_fill,
+              isSelected: (selectedIndex == 2),
+            ),
+            _NavigationBarItem(
+              onTap: handleItemSelected,
+              index: 3,
+              lable: 'Contacts ',
+              icon: CupertinoIcons.person_2_fill,
+              isSelected: (selectedIndex == 3),
+            )
+          ])),
+    );
   }
 }
 
