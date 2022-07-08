@@ -169,7 +169,9 @@ class _CommentState extends State<Comment> {
         title: Text("Comment Page"),
         backgroundColor: Colors.amber,
       ),
-      body: Container(
+      body:new Column(
+       children:<Widget>[ Container(
+        height: 400,
         child: CommentBox(
           userImage:
               "https://th.bing.com/th/id/R.b6114c06469c12bfbdd95dfd0ed78e47?rik=bGsyzd8rnPKMWg&pid=ImgRaw&r=0",
@@ -196,6 +198,7 @@ class _CommentState extends State<Comment> {
               );
             },
           ),
+          
           labelText: 'Write a comment...',
           withBorder: false,
           errorText: 'Comment cannot be blank',
@@ -225,7 +228,11 @@ class _CommentState extends State<Comment> {
           textColor: Color.fromARGB(255, 212, 199, 199),
           sendWidget: Icon(Icons.send_sharp, size: 30, color: Colors.amber),
         ),
+        
       ),
+    
+      ]
+      )
     );
   }
 }
