@@ -1,7 +1,9 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:travelcompanion/main.dart';
 import 'package:travelcompanion/screensLoginsignup/login/login.dart';
 import 'package:travelcompanion/componenetsloginsignup/background.dart';
 import 'package:travelcompanion/commonloginSignup/theme_helper.dart';
@@ -9,6 +11,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hexcolor/hexcolor.dart';
 import '../../homeScreen/home.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class RegisterScreen extends StatefulWidget {
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -18,10 +22,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
   TextEditingController userNameController = TextEditingController();
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: Background(
         child: Column(
@@ -82,9 +86,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           email: emailController.text,
                           password: passwordController.text)
                       .then((value) {
+                    FirebaseFirestore.instance
+                        .collection('UserData')
+                        .doc(value.user?.uid)
+                        .set({
+                      "email": value.user?.email,
+                      "uid": value.user?.uid,
+                      "name": userNameController.text,
+                      "role": "user",
+                      "state": "Neutral",
+                      "password": passwordController.text,
+                      "photoUrl":
+                          "https://th.bing.com/th/id/R.73ec5d1d582914ba22315054b2167f46?rik=q8MGhMJPkooKPQ&riu=http%3a%2f%2fgetwallpapers.com%2fwallpaper%2ffull%2f6%2f0%2f3%2f265638.jpg&ehk=EG%2bNhzgIKJ34GwRfoCCogS77Rs4MBnFy9QqM7l0PGMw%3d&risl=&pid=ImgRaw&r=0",
+                    });
                     print("Created New Account");
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
                   }).onError((error, stackTrace) {
                     print("Error ${error.toString()}");
                   });
@@ -179,7 +196,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
-
 // Future<UserCredential> signInWithGoogle() async {
 //   final GoogleSignInAccount googleuser = await GoogleSignIn().signIn();
 
