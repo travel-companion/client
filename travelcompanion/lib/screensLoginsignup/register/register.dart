@@ -12,6 +12,7 @@ import 'package:hexcolor/hexcolor.dart';
 import '../../homeScreen/home.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path/path.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -95,7 +96,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       "name": userNameController.text,
                       "role": "user",
                       "state": "Neutral",
-                      "password": passwordController.text,
                       "photoUrl":
                           "https://th.bing.com/th/id/R.73ec5d1d582914ba22315054b2167f46?rik=q8MGhMJPkooKPQ&riu=http%3a%2f%2fgetwallpapers.com%2fwallpaper%2ffull%2f6%2f0%2f3%2f265638.jpg&ehk=EG%2bNhzgIKJ34GwRfoCCogS77Rs4MBnFy9QqM7l0PGMw%3d&risl=&pid=ImgRaw&r=0",
                     });
