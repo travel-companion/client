@@ -33,12 +33,11 @@ dependencies:
   cupertino_icons: ^1.0.5
   dropdown_search: ^5.0.2
   faker: ^2.0.0
+  filter_list: ^1.0.2
   firebase_analytics: ^9.1.12
   firebase_auth: ^3.4.1
   firebase_core: ^1.19.1
   firebase_database: ^9.0.18
-  image_picker: ^0.8.5+3
-
   flutter:
     sdk: flutter
   fluttertoast: ^8.0.9
@@ -50,6 +49,7 @@ dependencies:
   google_sign_in: ^5.3.3
   hexcolor: ^2.0.7
   http: ^0.13.4
+  image_picker: ^0.8.5+3
   jiffy: ^5.0.0
   location: ^4.4.0
   otp_text_field: ^1.1.3
