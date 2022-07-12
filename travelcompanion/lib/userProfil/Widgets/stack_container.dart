@@ -22,6 +22,7 @@ class _StackContainerState extends State<StackContainer> {
   String? _photoUrl;
   String? _uid;
 
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -230,5 +231,6 @@ class _StackContainerState extends State<StackContainer> {
     }).catchError((e) {
       print(e);
     });
+
   }
 }
