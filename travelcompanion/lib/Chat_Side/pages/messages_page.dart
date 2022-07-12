@@ -47,41 +47,77 @@ class _MessageTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(15),
-          child: Avatar.medium(url: messageData.profilePicture),
+    return InkWell(
+      onTap: () {},
+      child: Container(
+        height: 120,
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom:
+                BorderSide(color: Color.fromARGB(255, 58, 57, 57), width: 0.7),
+          ),
         ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Row(
             children: [
-              Text(
-                messageData.senderName,
-                style: const TextStyle(
-                    color: Color.fromARGB(255, 245, 187, 95),
-                    overflow: TextOverflow.ellipsis,
-                    letterSpacing: 0.2,
-                    wordSpacing: 1.5,
-                    fontWeight: FontWeight.w900),
-              ),
               Padding(
-                padding: const EdgeInsets.only(left: 0.2, top: 3, bottom: 2),
-                child: Text(
-                  messageData.message,
-                  style: const TextStyle(
-                      color: Color.fromARGB(255, 242, 203, 110),
-                      overflow: TextOverflow.clip,
-                      letterSpacing: 0.1,
-                      wordSpacing: 1,
-                      fontWeight: FontWeight.w100),
+                padding: const EdgeInsets.all(15),
+                child: Avatar.medium(url: messageData.profilePicture),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      messageData.senderName,
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 245, 187, 95),
+                          overflow: TextOverflow.ellipsis,
+                          letterSpacing: 0.2,
+                          wordSpacing: 1.5,
+                          fontWeight: FontWeight.w900),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 0.2, top: 3, bottom: 2),
+                      child: Text(
+                        messageData.message,
+                        style: const TextStyle(
+                            color: Color.fromARGB(255, 242, 203, 110),
+                            overflow: TextOverflow.clip,
+                            letterSpacing: 0.1,
+                            wordSpacing: 1,
+                            fontWeight: FontWeight.w100),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(right: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      messageData.dateMessage.toUpperCase(),
+                      style: const TextStyle(
+                          fontSize: 10,
+                          color: Color.fromARGB(255, 201, 191, 105)),
+                    )
+                  ],
+                ),
+              )
             ],
           ),
-        )
-      ],
+        ),
+      ),
     );
   }
 }
