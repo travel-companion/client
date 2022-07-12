@@ -218,6 +218,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.6"
+
   firebase_database:
     dependency: "direct main"
     description:
@@ -239,6 +240,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0+17"
+  firebase_storage:
+    dependency: "direct main"
+    description:
+      name: firebase_storage
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "10.3.1"
+  firebase_storage_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_storage_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.10"
+  firebase_storage_web:
+    dependency: transitive
+    description:
+      name: firebase_storage_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.2.19"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -457,6 +479,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.0"
+  image_picker_web:
+    dependency: "direct main"
+    description:
+      name: image_picker_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
   intl:
     dependency: transitive
     description:
