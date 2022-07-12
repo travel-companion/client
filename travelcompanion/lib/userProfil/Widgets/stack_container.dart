@@ -22,6 +22,7 @@ class _StackContainerState extends State<StackContainer> {
   String? _photoUrl;
   String? _uid;
 
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -84,6 +85,17 @@ class _StackContainerState extends State<StackContainer> {
   }
 
   Widget imageProfile() {
+    // String newImg =
+    //     'https://cdn.futura-sciences.com/buildsv6/images/mediumoriginal/a/c/b/acb08455e1_128818_60-ans-nasa-02.jpg';
+    // pic() {
+    //   if (_photoUrl == null) {
+    //     newImg =
+    //         'https://cdn.futura-sciences.com/buildsv6/images/mediumoriginal/a/c/b/acb08455e1_128818_60-ans-nasa-02.jpg';
+    //   } else {
+    //     String newImg = _photoUrl!;
+    //   }
+    // }
+
     return Center(
       child: Stack(children: <Widget>[
         CircleAvatar(
@@ -99,8 +111,9 @@ class _StackContainerState extends State<StackContainer> {
                     fit: BoxFit.fill,
                   )
                 : Image.network(
-                    "https://i0.wp.com/fac.img.pmdstatic.net/fit/http.3A.2F.2Fprd2-bone-image.2Es3-website-eu-west-1.2Eamazonaws.2Ecom.2FFAC.2Fvar.2Ffemmeactuelle.2Fstorage.2Fimages.2Fanimaux.2Fveterinaire-les-conseils.2Fles-races-de-chats-de-a-a-z.2F3647789-16-fre-FR.2Fles-races-de-chats-de-a-a-z.2Ejpg/1200x1200/quality/80/crop-from/center/les-races-de-chats-de-a-a-z.jpeg",
-                    // _photoUrl.toString(),
+
+                    'https://previews.123rf.com/images/carynpereira/carynpereira1102/carynpereira110200022/8886088-zebra-face.jpg',
+
                     fit: BoxFit.fill,
                   ),
           )),
@@ -134,6 +147,20 @@ class _StackContainerState extends State<StackContainer> {
               'Submit',
               style: TextStyle(
                   color: Color.fromARGB(255, 6, 6, 6), fontSize: 15.0),
+
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 20.0,
+          left: 1.0,
+          child: RaisedButton(
+            onPressed: () {
+              uploadImageToFirebase(context);
+            },
+            child: const Text(
+              'Submit',
+              style: TextStyle(color: Colors.white, fontSize: 10.0),
             ),
           ),
         ),
@@ -222,5 +249,6 @@ class _StackContainerState extends State<StackContainer> {
     }).catchError((e) {
       print(e);
     });
+
   }
 }
