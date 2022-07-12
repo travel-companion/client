@@ -110,7 +110,7 @@ class _StackContainerState extends State<StackContainer> {
                     fit: BoxFit.fill,
                   )
                 : Image.network(
-                    _photoUrl.toString(),
+                    'https://previews.123rf.com/images/carynpereira/carynpereira1102/carynpereira110200022/8886088-zebra-face.jpg',
                     fit: BoxFit.fill,
                   ),
           )),
