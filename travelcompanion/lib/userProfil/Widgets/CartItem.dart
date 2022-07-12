@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:travelcompanion/Chat_Side/main_chat.dart';
 
 class CartItem extends StatefulWidget {
+  final roomName;
+  const CartItem({
+    Key? key,
+    required this.roomName,
+  }) : super(key: key);
   @override
   cardItem createState() => cardItem();
 }
@@ -12,15 +17,16 @@ class cardItem extends State<CartItem> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => const Chat(
-                    name: 'kkjk',
-                    roomNameDesu: 'wow',
+              builder: (context) => Chat(
+                    name: widget.roomName,
+                    roomNameDesu: widget.roomName,
                   )));
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    var name = widget.roomName;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14.0),
       child: Card(
@@ -43,16 +49,16 @@ class cardItem extends State<CartItem> {
                 Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Text(
-                        "ROOM 1",
-                        style: TextStyle(
+                        name,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0,
                         ),
                       ),
-                      SizedBox(height: 2.0),
-                      Text(
+                      const SizedBox(height: 2.0),
+                      const Text(
                         "Circuit Barcelone => La Marsa",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,

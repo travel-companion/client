@@ -14,7 +14,7 @@ Future<void> main() async {
     options: const FirebaseOptions(
       apiKey: "AIzaSyB1wAoFYTdJ-5yV9y8aIzt_X_MgY3obKAY",
       appId: "1:1397283656:android:180dcc061fcc282e3e717d",
-      messagingSenderId: "XXX",
+      messagingSenderId: "1397283656",
       projectId: "travel-companion-a27a6",
     ),
   );

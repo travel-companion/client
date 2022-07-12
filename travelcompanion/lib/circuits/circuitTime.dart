@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../Chat_Side/main_chat.dart';
 
 class CircuitTime extends StatefulWidget {
@@ -18,6 +19,10 @@ class CircuitTime extends StatefulWidget {
 class _CircuitTimeState extends State<CircuitTime> {
   // time storage
   List<String> times = [];
+  String? _email;
+  String? _name;
+  String? _photoUrl;
+  String? _uid;
 
   //get time
   Future getTimes() async {
@@ -31,6 +36,41 @@ class _CircuitTimeState extends State<CircuitTime> {
             },
           ),
         );
+  }
+
+  loggedUser() async {
+    final firebaseUser = FirebaseAuth.instance.currentUser!;
+    await FirebaseFirestore.instance
+        .collection('UserData')
+        .doc(firebaseUser.uid)
+        .get()
+        .then((ds) {
+      _email = ds.data()!['email'];
+      _name = ds.data()!['name'];
+      _photoUrl = ds.data()!['photoUrl'];
+      _uid = ds.data()!['uid'];
+      print(_uid);
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  Future logCircuit() async {
+    await FirebaseFirestore.instance
+        .collection('UserData')
+        .get()
+        .then((value) => value.docs.forEach((element) {
+              print(element.data()[_name]);
+            }));
+  }
+
+  Future addCircuit(room) async {
+    await FirebaseFirestore.instance.collection('UserData').doc(_uid).update(({
+          'userLines': FieldValue.arrayUnion([room])
+        }));
+
+    // .get()
+    // .then((value) => value.data()?['userLines'].arrayUnion([room]));
   }
 
   @override
@@ -55,7 +95,7 @@ class _CircuitTimeState extends State<CircuitTime> {
           //     )),
           Expanded(
             child: FutureBuilder(
-              future: getTimes(),
+              future: loggedUser(),
               builder: (context, snapshot) {
                 return ListView.builder(
                     itemCount: widget.value["times"].length,
@@ -73,10 +113,13 @@ class _CircuitTimeState extends State<CircuitTime> {
                                 const Color.fromARGB(255, 255, 153, 0),
                             child: IconButton(
                               onPressed: (() {
-                                var chatRoom =
+                                String chatRoom =
                                     value['ref'] + value['times'][index]['t'];
                                 var roomNameDesu = value['ref'];
                                 log('test:$chatRoom');
+                                addCircuit(chatRoom);
+                                loggedUser();
+
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return Chat(
