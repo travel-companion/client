@@ -77,25 +77,25 @@ class Circuits extends StatelessWidget {
   }
 }
 
-class Feed extends StatelessWidget {
-  const Feed({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(20)),
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (context) {
-              return FeedPublication();
-            },
-          ));
-        },
-        child: const Text('show the feed'),
-      ),
-    );
-  }
-}
+// class Feed extends StatelessWidget {
+//   const Feed({Key? key}) : super(key: key);
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: ElevatedButton(
+//         style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(20)),
+//         onPressed: () {
+//           Navigator.push(context, MaterialPageRoute(
+//             builder: (context) {
+//               return FeedPublication();
+//             },
+//           ));
+//         },
+//         child: const Text('show the feed'),
+//       ),
+//     );
+//   }
+// }
 
 class Profil extends StatelessWidget {
   const Profil({Key? key}) : super(key: key);

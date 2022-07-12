@@ -3,6 +3,8 @@ import 'package:travelcompanion/main.dart';
 
 import '../../circuits/circuit.dart';
 import '../userProfil.dart';
+import '../../screensLoginsignup/login/login.dart';
+
 
 class TopBar extends StatelessWidget {
   const TopBar({
@@ -17,11 +19,11 @@ class TopBar extends StatelessWidget {
       children: <Widget>[
         IconButton(
           onPressed: () {
-            onPressed:
-            () => {
+            
+            
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => UserProfil()))
-                };
+                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                
           },
           icon: const Icon(
             Icons.arrow_back,

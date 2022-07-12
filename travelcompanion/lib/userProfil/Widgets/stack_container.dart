@@ -20,7 +20,7 @@ class _StackContainerState extends State<StackContainer> {
   String? _email;
   String? _name;
   String? _photoUrl;
-
+  String? _id;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -175,6 +175,7 @@ class _StackContainerState extends State<StackContainer> {
         _email = ds.data()!['email'];
         _name = ds.data()!['name'];
         _photoUrl = ds.data()!['photoUrl'];
+        _id= ds.id;
         print(_email);
       }).catchError((e) {
         print(e);
