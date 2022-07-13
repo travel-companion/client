@@ -23,7 +23,6 @@ class cardItem extends State<CartItem> {
           context,
           MaterialPageRoute(
               builder: (context) => Chat(
-                    name: widget.roomName,
                     roomNameDesu: widget.roomName,
                   )));
     });

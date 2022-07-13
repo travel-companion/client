@@ -13,18 +13,10 @@ import '../themes.dart';
 import '../dummy.dart';
 
 class ChatHome extends StatelessWidget {
-  final roomName;
-  var roomNameDesu;
-  ChatHome({required this.roomNameDesu, this.roomName, Key? key})
-      : super(key: key);
+  final roomNameDesu;
+  ChatHome({required this.roomNameDesu, Key? key}) : super(key: key);
   final ValueNotifier<int> pageIndex = ValueNotifier(0);
   late ValueNotifier<String> title = ValueNotifier(roomNameDesu);
-  final pages = [
-    const MessagesPage(),
-    ReportPage(),
-    const CallsPage(),
-    const ContactsPage(),
-  ];
 
   late var pageTitles = [roomNameDesu, 'Report Incident', 'Calls', 'Contacts'];
 
@@ -35,6 +27,14 @@ class ChatHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      MessagesPage(
+        roomNameDesu: roomNameDesu,
+      ),
+      ReportPage(),
+      const CallsPage(),
+      const ContactsPage(),
+    ];
     return Scaffold(
       appBar: AppBar(
           //Top part 'title'
