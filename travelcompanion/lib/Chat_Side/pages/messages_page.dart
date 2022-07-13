@@ -1,42 +1,51 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../dummy.dart';
 import '../themes.dart';
 import '../widgets/avatar.dart';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import 'package:faker/faker.dart';
-import 'package:jiffy/jiffy.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-// class MessageBox extends StatelessWidget {
-//   const MessageBox({Key? key}) : super(key: key);
+class MessagesPage extends StatefulWidget {
+  final roomNameDesu;
+  const MessagesPage({
+    required this.roomNameDesu,
+    Key? key,
+  }) : super(key: key);
 
-//   @override
-//   Widget build(BuildContext context) {
-//     //Maybe put data in a var here
+  @override
+  State<MessagesPage> createState() => _MessagesPageState();
+}
 
-//     return const ListTile(
-//       leading: CircleAvatar(
-//         radius: 25,
-//       ),
-//       title: Text(
-//         "Name here",
-//         style: TextStyle(
-//           fontSize: 16,
-//           fontWeight: FontWeight.bold,
-//         ),
-//       ),
-//       subtitle: Text(
-//         "Message here",
-//         style: TextStyle(
-//           fontSize: 13,
-//         ),
-//       ),
-//       trailing: Text('Time here'),
-//     );
-//   }
-// }
+class _MessagesPageState extends State<MessagesPage> {
+  // final roomName = widget.roomNameDesu;
+  // Stream<QuerySnapshot<dynamic>> chat =
+  //     FirebaseFirestore.instance.collection(widget.roomNameDesu).snapshots();
+  final controller = TextEditingController();
+  String? _name;
+  String? _photoUrl;
+  String? _uid;
 
-class MessagesPage extends StatelessWidget {
-  const MessagesPage({Key? key}) : super(key: key);
+  String message = '';
+
+  loggedUser() async {
+    final user = FirebaseAuth.instance.currentUser!;
+    await FirebaseFirestore.instance
+        .collection('UserData')
+        .doc(user.uid)
+        .get()
+        .then((value) {
+      _name = value.data()!['name'];
+      _photoUrl = value.data()!['photoUrl'];
+      _uid = value.data()!['uid'];
+    });
+  }
+
+  var size;
 
   @override
   Widget build(BuildContext context) {
@@ -48,52 +57,98 @@ class MessagesPage extends StatelessWidget {
             const SliverToBoxAdapter(
               child: _Stories(), //AKA member list of the specific circuit
             ),
-            SliverToBoxAdapter(
-              child: TextField(
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  hintText: 'help us god',
-                  suffixIcon: IconButton(
-                      onPressed: () {}, icon: const Icon(Icons.send)),
-                ),
-              ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(_delegate),
-            ),
+            SliverToBoxAdapter(child: text(context)),
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection(widget.roomNameDesu)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text("error");
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SliverList(
+                      delegate:
+                          SliverChildBuilderDelegate(_delegate, childCount: 0),
+                    );
+                  }
+                  final data = snapshot.requireData;
+                  log(data.size.toString());
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(_delegate,
+                        childCount: data.size),
+                  );
+                }),
           ],
-        ),
+        ), //ndknsdk
       ),
     );
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Expanded(
-  //       child: Column(
-  //     children: [
-  //       const SizedBox(
-  //         child: _Stories(),
-  //       ),
-  //       ListView(
-  //         children: const [MessageBox()],
-  //       ),
-  //     ],
-  //   ));
-  // }
+  Widget text(BuildContext context) {
+    return TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          hintText: 'Send message',
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: () async {
+              await loggedUser();
+              var val = {
+                'content': message,
+                'pic': _photoUrl,
+                'time': DateTime.now(),
+                'user': _name,
+              };
+              FirebaseFirestore.instance
+                  .collection(widget.roomNameDesu)
+                  .add(val);
+              controller.clear();
+            },
+          ),
+        ),
+        onChanged: (String value) {
+          setState(() {
+            message = value;
+          });
+        });
+  }
 
   Widget _delegate(BuildContext context, int index) {
     //This should be refactored to get from Firestore now
-    final Faker faker = Faker();
-    final date = Helpers.randomDate();
-    return _MessageTitle(
-        messageData: MessageData(
-      senderName: faker.person.name(),
-      message: faker.lorem.sentence(),
-      messageDate: date,
-      dateMessage: Jiffy(date).fromNow(),
-      profilePicture: Helpers.randomPictureUrl(),
-    ));
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection(widget.roomNameDesu)
+            .orderBy('time', descending: true)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Text("error");
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text("waiting");
+          }
+          final data = snapshot.requireData;
+          // dynamic chatRoom;
+          // for (var i = 0; i < data.size; i++) {
+          //   if (data.docs[i].id == widget.roomNameDesu) {
+          //     chatRoom = data.docs[i].data();
+          //     size = chatRoom['messages'].length;
+          //   }
+          // }
+          log(index.toString());
+          return _MessageTitle(
+            messageData: MessageData(
+              senderName: data.docs[index]['user'],
+              message: data.docs[index]['content'],
+              messageDate: data.docs[index]['time'].toDate(),
+              dateMessage: data.docs[index]['time'].toDate().toString(),
+              profilePicture: data.docs[index]['pic'],
+            ),
+          );
+        });
   }
 }
 
@@ -110,7 +165,7 @@ class _MessageTitle extends StatelessWidget {
     return InkWell(
       onTap: () {},
       child: Container(
-        height: 120,
+        height: 160,
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: const BoxDecoration(
           border: Border(

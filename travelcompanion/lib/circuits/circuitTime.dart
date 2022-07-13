@@ -123,8 +123,7 @@ class _CircuitTimeState extends State<CircuitTime> {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return Chat(
-                                    name: chatRoom,
-                                    roomNameDesu: roomNameDesu,
+                                    roomNameDesu: chatRoom,
                                   );
                                 }));
                               }),
