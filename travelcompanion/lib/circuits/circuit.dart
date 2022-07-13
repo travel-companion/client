@@ -13,22 +13,27 @@ class _CircuitListState extends State<CircuitList> {
   // Line storage
   List<dynamic> lines = [];
   List<String> times = [];
+  String searchString = "";
 
   //get lines
   Future getLineIDs() async {
+    var tempLines = [];
+    List<String> tempTimes = [];
     await FirebaseFirestore.instance.collection('lines').get().then(
           (snapshot) => snapshot.docs.forEach(
             (document) {
-              lines.add({
+              tempLines.add({
                 'ref': document.data()['ref'],
                 'times': document.data()['times']
               });
               for (var i = 0; i < document.data()['times'].length; i++) {
-                times.add(document.data()['times'][i]['t']);
+                tempTimes.add(document.data()['times'][i]['t']);
               }
             },
           ),
         );
+    lines = tempLines;
+    times = tempTimes;
   }
 
   @override
@@ -46,7 +51,11 @@ class _CircuitListState extends State<CircuitList> {
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: TextField(
-              onChanged: (value) {},
+              onChanged: (String value) {
+                setState(() {
+                  searchString = value;
+                });
+              },
               decoration: const InputDecoration(
                   labelText: "Search",
                   hintText: "Search",
@@ -70,35 +79,44 @@ class _CircuitListState extends State<CircuitList> {
                 return ListView.builder(
                     itemCount: lines.length,
                     itemBuilder: (context, index) {
-                      return Card(
-                        color: const Color.fromARGB(255, 255, 197, 37),
-                        shadowColor: const Color.fromARGB(255, 255, 149, 0),
-                        elevation: 10,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 255, 153, 0),
-                              child: IconButton(
-                                  onPressed: () {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return CircuitTime(value: lines[index]);
-                                    }));
-                                  },
-                                  icon: const Icon(
-                                    Icons.arrow_upward,
-                                    color: Color.fromARGB(255, 255, 230, 0),
-                                  ))),
-                          title: Text(
-                            lines[index]["ref"],
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          trailing: const Icon(Icons.train),
-                        ),
-                      );
+                      return lines[index]['ref']
+                              .toString()
+                              .toLowerCase()
+                              .contains(searchString)
+                          ? Card(
+                              color: const Color.fromARGB(255, 255, 197, 37),
+                              shadowColor:
+                                  const Color.fromARGB(255, 255, 149, 0),
+                              elevation: 10,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 255, 153, 0),
+                                    child: IconButton(
+                                        onPressed: () {
+                                          Navigator.push(context,
+                                              MaterialPageRoute(
+                                                  builder: (context) {
+                                            return CircuitTime(
+                                                value: lines[index]);
+                                          }));
+                                        },
+                                        icon: const Icon(
+                                          Icons.arrow_upward,
+                                          color:
+                                              Color.fromARGB(255, 255, 230, 0),
+                                        ))),
+                                title: Text(
+                                  lines[index]["ref"],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                trailing: const Icon(Icons.train),
+                              ),
+                            )
+                          : Container();
                     });
               },
             ),

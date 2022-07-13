@@ -44,23 +44,29 @@ class _FeedPublicationState extends State<FeedPublication> {
           length: 5,
           child: Scaffold(
             appBar: AppBar(
-              backgroundColor: const Color.fromARGB(255, 240, 199, 78),
-              title: const Text(
+              backgroundColor: Colors.amber,
+              title: Text(
                 'Travel Companion',
                 style: TextStyle(
-                  fontFamily: 'GrandHotel',
-                  fontSize: 34,
+                  fontFamily: 'Boinkn',
+                  fontStyle: FontStyle.italic,
+                  foreground: Paint()
+                  
+                    ..style = PaintingStyle.stroke
+                    ..strokeWidth = 2
+                    ..color = Colors.white,
+                  // fontFamily: 'GrandHotel',
+                  fontSize: 25,
                   letterSpacing: 1,
                 ),
               ),
               actions: [
-                const Icon(Icons.home_filled, size: 50),
-                const SizedBox(width: 30),
                 IconButton(
+                  padding: EdgeInsets.only(right: 30.0),
                   onPressed: () {
                     ClickMe();
                   },
-                  icon: const Icon(Icons.person_pin_circle_outlined, size: 50),
+                  icon: const Icon(Icons.home_filled, size: 50),
                 ),
                 const SizedBox(width: 10),
               ],
