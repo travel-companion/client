@@ -25,6 +25,7 @@ class _MessagesPageState extends State<MessagesPage> {
   // final roomName = widget.roomNameDesu;
   // Stream<QuerySnapshot<dynamic>> chat =
   //     FirebaseFirestore.instance.collection(widget.roomNameDesu).snapshots();
+  final controller = TextEditingController();
   String? _name;
   String? _photoUrl;
   String? _uid;
@@ -51,65 +52,68 @@ class _MessagesPageState extends State<MessagesPage> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        body: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection(widget.roomNameDesu)
-                .snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return const Text("error");
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Text("waiting");
-              }
-              final data = snapshot.requireData;
-              log(data.size.toString());
-              return CustomScrollView(
-                slivers: [
-                  const SliverToBoxAdapter(
-                    child: _Stories(), //AKA member list of the specific circuit
-                  ),
-                  SliverToBoxAdapter(
-                    child: FutureBuilder(
-                      future: loggedUser(),
-                      builder: (context, snapshot) {
-                        return TextField(
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              hintText: 'Send message',
-                              suffixIcon: IconButton(
-                                icon: const Icon(Icons.send),
-                                onPressed: () {
-                                  var val = {
-                                    'content': message,
-                                    'pic': _photoUrl,
-                                    'time': DateTime.now(),
-                                    'user': _name,
-                                  };
-                                  FirebaseFirestore.instance
-                                      .collection(widget.roomNameDesu)
-                                      .add(val);
-                                },
-                              ),
-                            ),
-                            onChanged: (String value) {
-                              setState(() {
-                                message = value;
-                              });
-                            });
-                      },
-                    ),
-                  ),
-                  SliverList(
+        body: CustomScrollView(
+          slivers: [
+            const SliverToBoxAdapter(
+              child: _Stories(), //AKA member list of the specific circuit
+            ),
+            SliverToBoxAdapter(child: text(context)),
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection(widget.roomNameDesu)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text("error");
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SliverList(
+                      delegate:
+                          SliverChildBuilderDelegate(_delegate, childCount: 0),
+                    );
+                  }
+                  final data = snapshot.requireData;
+                  log(data.size.toString());
+                  return SliverList(
                     delegate: SliverChildBuilderDelegate(_delegate,
                         childCount: data.size),
-                  ),
-                ],
-              );
-            }),
+                  );
+                }),
+          ],
+        ), //ndknsdk
       ),
     );
+  }
+
+  Widget text(BuildContext context) {
+    return TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          hintText: 'Send message',
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: () async {
+              await loggedUser();
+              var val = {
+                'content': message,
+                'pic': _photoUrl,
+                'time': DateTime.now(),
+                'user': _name,
+              };
+              FirebaseFirestore.instance
+                  .collection(widget.roomNameDesu)
+                  .add(val);
+              controller.clear();
+            },
+          ),
+        ),
+        onChanged: (String value) {
+          setState(() {
+            message = value;
+          });
+        });
   }
 
   Widget _delegate(BuildContext context, int index) {
@@ -117,6 +121,7 @@ class _MessagesPageState extends State<MessagesPage> {
     return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection(widget.roomNameDesu)
+            .orderBy('time', descending: true)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
