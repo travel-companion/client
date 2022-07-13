@@ -9,9 +9,9 @@ class MessageData {
     required this.dateMessage,
     required this.profilePicture,
   });
-  final String senderName;
-  final String message;
+  final dynamic senderName;
+  final dynamic message;
   final DateTime messageDate;
-  final String dateMessage;
-  final String profilePicture;
+  final dynamic dateMessage;
+  final dynamic profilePicture;
 }
