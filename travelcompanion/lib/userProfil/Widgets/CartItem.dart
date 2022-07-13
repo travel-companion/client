@@ -1,7 +1,17 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:travelcompanion/Chat_Side/main_chat.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../userProfil.dart';
 class CartItem extends StatefulWidget {
+  final roomName;
+  final userId;
+  const CartItem({
+    Key? key,
+    required this.roomName,
+    required this.userId,
+  }) : super(key: key);
   @override
   cardItem createState() => cardItem();
 }
@@ -12,15 +22,30 @@ class cardItem extends State<CartItem> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => const Chat(
-                    name: 'kkjk',
-                    roomNameDesu: 'wow',
+              builder: (context) => Chat(
+                    name: widget.roomName,
+                    roomNameDesu: widget.roomName,
                   )));
     });
   }
 
+  _delete(name) async {
+    DocumentReference _userLines =
+        FirebaseFirestore.instance.collection('UserData').doc(widget.userId);
+    await _userLines.get().then((value) => {
+          log(value['userLines'].toString()),
+          _userLines.update({
+            "userLines": value['userLines'].where((i) => i != name).toList()
+          }).then((value) => Navigator.push(
+                              context, MaterialPageRoute(builder: (context) => 
+                              UserProfil())
+                              ) )
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
+    var name = widget.roomName;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14.0),
       child: Card(
@@ -43,23 +68,34 @@ class cardItem extends State<CartItem> {
                 Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Text(
-                        "ROOM 1",
-                        style: TextStyle(
+                        name,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0,
                         ),
                       ),
-                      SizedBox(height: 2.0),
-                      Text(
+                      const SizedBox(height: 2.0),
+                      const Text(
                         "Circuit Barcelone => La Marsa",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15.0,
                         ),
                       ),
-                    ])
+                    ]),
+                IconButton(
+                  padding: EdgeInsets.only(left: 30.0),
+                  onPressed: () {
+                    _delete(name);
+                  },
+                  icon: const Icon(
+                    Icons.delete,
+                    size: 33,
+                    color: Color.fromARGB(255, 201, 18, 18),
+                  ),
+                )
               ]),
         ),
       ),
