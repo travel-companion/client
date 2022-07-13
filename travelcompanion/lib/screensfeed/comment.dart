@@ -233,7 +233,8 @@ class _CommentState extends State<Comment> {
                           }),
                            Navigator.push(
                               context, MaterialPageRoute(builder: (context) => 
-                              FeedPublication( emailUser:widget.emailUser,nameUser:widget.nameUser,photoUrlUser:widget.photoUrlUser,idUser:widget.idUser))),
+                              FeedPublication( emailUser:widget.emailUser,nameUser:widget.nameUser,photoUrlUser:widget.photoUrlUser,idUser:widget.idUser))
+                              ),
                           
                     },
                   ):Container();

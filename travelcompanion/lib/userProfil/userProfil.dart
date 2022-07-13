@@ -85,6 +85,7 @@ class _UserProfilState extends State<UserProfil> {
                 ListView.builder(
                   itemBuilder: (context, index) => CartItem(
                     roomName: _userLines?[index],
+                    userId:_uid,
                   ),
                   shrinkWrap: true,
                   itemCount: length,
