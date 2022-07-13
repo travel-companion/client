@@ -45,16 +45,22 @@ class _FeedPublicationState extends State<FeedPublication> {
           child: Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.amber,
-              title: const Text(
+              title: Text(
                 'Travel Companion',
                 style: TextStyle(
+                  fontFamily: 'Boinkn',
+                  fontStyle: FontStyle.italic,
+                  foreground: Paint()
+                  
+                    ..style = PaintingStyle.stroke
+                    ..strokeWidth = 2
+                    ..color = Colors.white,
                   // fontFamily: 'GrandHotel',
                   fontSize: 25,
                   letterSpacing: 1,
                 ),
               ),
               actions: [
-               
                 IconButton(
                   padding: EdgeInsets.only(right: 30.0),
                   onPressed: () {

@@ -5,7 +5,6 @@ import '../../circuits/circuit.dart';
 import '../userProfil.dart';
 import '../../screensLoginsignup/login/login.dart';
 
-
 class TopBar extends StatelessWidget {
   const TopBar({
     Key? key,
@@ -13,22 +12,13 @@ class TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+    
     return SafeArea(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        IconButton(
-          onPressed: () {
-            
-            
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()));
-                
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-          ),
-        ),
+        
         IconButton(
             onPressed: () => {
                   Navigator.push(
@@ -40,6 +30,15 @@ class TopBar extends StatelessWidget {
               Icons.train_outlined,
               size: 35,
             )),
+            IconButton(
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => LoginScreen()));
+          },
+          icon: const Icon(
+            Icons.logout,
+          ),
+        ),
       ],
     ));
   }
