@@ -10,15 +10,31 @@ import '../widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../themes.dart';
-import '../dummy.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatHome extends StatelessWidget {
   final roomNameDesu;
+  String? _name;
+  String? _photoUrl;
   ChatHome({required this.roomNameDesu, Key? key}) : super(key: key);
   final ValueNotifier<int> pageIndex = ValueNotifier(0);
   late ValueNotifier<String> title = ValueNotifier(roomNameDesu);
 
-  late var pageTitles = [roomNameDesu, 'Report Incident', 'Calls', 'Contacts'];
+  late var pageTitles = [roomNameDesu, 'Report Incident', 'Calls', 'Map'];
+
+  loggedUser() async {
+    final user = FirebaseAuth.instance.currentUser!;
+    await FirebaseFirestore.instance
+        .collection('UserData')
+        .doc(user.uid)
+        .get()
+        .then((value) {
+      _name = value.data()!['name'];
+      _photoUrl = value.data()!['photoUrl'];
+    });
+    log(_photoUrl.toString());
+  }
 
   void _onNavigationItemSelected(i) {
     title.value = pageTitles[i];
@@ -27,6 +43,7 @@ class ChatHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    loggedUser();
     final pages = [
       MessagesPage(
         roomNameDesu: roomNameDesu,
@@ -35,60 +52,66 @@ class ChatHome extends StatelessWidget {
       const CallsPage(),
       const ContactsPage(),
     ];
-    return Scaffold(
-      appBar: AppBar(
-          //Top part 'title'
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: ValueListenableBuilder(
-            valueListenable: title,
-            builder: (BuildContext context, String value, _) {
-              return Text(
-                value,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Color.fromARGB(255, 234, 193, 113)),
-              );
+    return FutureBuilder(
+      future: loggedUser(),
+      builder: (context, snapshot) {
+        child:
+        return Scaffold(
+          appBar: AppBar(
+              //Top part 'title'
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              title: ValueListenableBuilder(
+                valueListenable: title,
+                builder: (BuildContext context, String value, _) {
+                  return Text(
+                    value,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Color.fromARGB(255, 234, 193, 113)),
+                  );
+                },
+              ),
+              leadingWidth: 55,
+              leading: Align(
+                alignment: Alignment.centerRight,
+                child: BackButton(
+                  onPressed: () {
+                    log('value$roomNameDesu');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return UserProfil();
+                        },
+                      ),
+                    );
+                  },
+                ),
+                // child: IconBackground(
+                //     icon: Icons.search,
+                //     onTap: () {
+                //       print('SEARCH');
+                //     }),
+              ),
+              actions: [
+                //Own avatar icon
+                Padding(
+                    padding: const EdgeInsets.only(right: 26.0),
+                    child: Avatar.small(url: _photoUrl))
+              ]),
+          body: ValueListenableBuilder(
+            valueListenable: pageIndex,
+            builder: (BuildContext context, int value, _) {
+              return pages[value];
             },
           ),
-          leadingWidth: 55,
-          leading: Align(
-            alignment: Alignment.centerRight,
-            child: BackButton(
-              onPressed: () {
-                log('value$roomNameDesu');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return UserProfil();
-                    },
-                  ),
-                );
-              },
-            ),
-            // child: IconBackground(
-            //     icon: Icons.search,
-            //     onTap: () {
-            //       print('SEARCH');
-            //     }),
+          bottomNavigationBar: _BottomNavigationBar(
+            onItemselected: _onNavigationItemSelected,
           ),
-          actions: [
-            //Own avatar icon
-            Padding(
-                padding: const EdgeInsets.only(right: 26.0),
-                child: Avatar.small(url: Helpers.randomPictureUrl()))
-          ]),
-      body: ValueListenableBuilder(
-        valueListenable: pageIndex,
-        builder: (BuildContext context, int value, _) {
-          return pages[value];
-        },
-      ),
-      bottomNavigationBar: _BottomNavigationBar(
-        onItemselected: _onNavigationItemSelected,
-      ),
+        );
+      },
     );
   }
 }
@@ -147,8 +170,8 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
             _NavigationBarItem(
               onTap: handleItemSelected,
               index: 3,
-              lable: 'Contacts ',
-              icon: CupertinoIcons.person_2_fill,
+              lable: 'Map ',
+              icon: CupertinoIcons.location,
               isSelected: (selectedIndex == 3),
             )
           ])),

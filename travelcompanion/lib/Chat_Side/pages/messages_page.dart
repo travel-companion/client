@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../dummy.dart';
 import '../themes.dart';
 import '../widgets/avatar.dart';
 import 'package:flutter/material.dart';
@@ -108,8 +107,9 @@ class _MessagesPageState extends State<MessagesPage> {
       ),
     ),
             ),
-            const SliverToBoxAdapter(
-              child: _Stories(), //AKA member list of the specific circuit
+             SliverToBoxAdapter(
+              child: _Stories(roomNameDesu: widget.roomNameDesu,), //AKA member list of the specific circuit
+
             ),
             SliverToBoxAdapter(child: text(context)),
             StreamBuilder<QuerySnapshot>(
@@ -128,7 +128,7 @@ class _MessagesPageState extends State<MessagesPage> {
                     );
                   }
                   final data = snapshot.requireData;
-                  log(data.size.toString());
+                  // log(data.size.toString());
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(_delegate,
                         childCount: data.size),
@@ -192,7 +192,7 @@ class _MessagesPageState extends State<MessagesPage> {
           //     size = chatRoom['messages'].length;
           //   }
           // }
-          log(index.toString());
+          // log(index.toString());
           return _MessageTitle(
             messageData: MessageData(
               senderName: data.docs[index]['user'],
@@ -292,51 +292,78 @@ class _MessageTitle extends StatelessWidget {
 }
 
 class _Stories extends StatelessWidget {
-  const _Stories({Key? key}) : super(key: key);
+  final roomNameDesu;
+  final membersList = [];
+  _Stories({
+    required this.roomNameDesu,
+    Key? key,
+  }) : super(key: key);
+
+  getParticipants() async {
+    await FirebaseFirestore.instance
+        .collection('chatRoomData')
+        .doc(roomNameDesu)
+        .get()
+        .then((value) {
+      {
+        print(value.data()?['activeUsers']);
+        value.data()?['activeUsers'].forEach((val) {
+          // log(val.toString());
+          membersList.add(val);
+          log(membersList[0]['photoUrl']);
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: SizedBox(
-        height: 134,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 6, bottom: 7),
-              child: Text(
-                //THIS SHOULD BE THE CIRCUIT NAME INSTEAD //Not really because circuit name is on top now
-                'Members',
-                style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 15,
-                    color: AppColors.textFaded),
+    return FutureBuilder(
+        future: getParticipants(),
+        builder: (context, snapshot) {
+          return Card(
+            child: SizedBox(
+              height: 134,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0, top: 6, bottom: 7),
+                    child: Text(
+                      //THIS SHOULD BE THE CIRCUIT NAME INSTEAD //Not really because circuit name is on top now
+                      'Members',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                          color: AppColors.textFaded),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: membersList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          //Get data from: Map on UserData then check UserLines and if TOP LINE NAME included in UserLines array, then add user in a list here to map on and show.
+                          final faker = Faker();
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: 67,
+                              child: _StoryCard(
+                                storyData: StoryData(
+                                  name: membersList[index]['name'],
+                                  url: membersList[index]['photoUrl'],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                  )
+                ],
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) {
-                    //Get data from: Map on UserData then check UserLines and if TOP LINE NAME included in UserLines array, then add user in a list here to map on and show.
-                    final faker = Faker();
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: 67,
-                        child: _StoryCard(
-                          storyData: StoryData(
-                            name: faker.person.name(),
-                            url: Helpers.randomPictureUrl(),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-            )
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 }
 
