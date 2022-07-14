@@ -111,14 +111,16 @@ class _StackContainerState extends State<StackContainer> {
                     fit: BoxFit.fill,
                   )
                 : Image.network(
+
                     'https://previews.123rf.com/images/carynpereira/carynpereira1102/carynpereira110200022/8886088-zebra-face.jpg',
+
                     fit: BoxFit.fill,
                   ),
           )),
         ),
         Positioned(
-          bottom: 20.0,
-          right: 20.0,
+          bottom: 12.0,
+          right: 5.0,
           child: InkWell(
             onTap: () {
               showModalBottomSheet(
@@ -128,8 +130,24 @@ class _StackContainerState extends State<StackContainer> {
             },
             child: const Icon(
               Icons.camera_alt,
-              color: Color.fromARGB(255, 198, 194, 183),
-              size: 28.0,
+              color: Color.fromARGB(255, 243, 198, 73),
+              size: 32.0,
+            ),
+          ),
+        ),
+        SizedBox(width: 30),
+        Positioned(
+          bottom: 12.0,
+          left: 0,
+          child: RaisedButton(
+            onPressed: () {
+              uploadImageToFirebase(context);
+            },
+            child: const Text(
+              'Submit',
+              style: TextStyle(
+                  color: Color.fromARGB(255, 6, 6, 6), fontSize: 15.0),
+
             ),
           ),
         ),

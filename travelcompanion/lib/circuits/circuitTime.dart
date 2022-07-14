@@ -73,6 +73,17 @@ class _CircuitTimeState extends State<CircuitTime> {
     // .then((value) => value.data()?['userLines'].arrayUnion([room]));
   }
 
+  Future addChat(room) async {
+    await FirebaseFirestore.instance
+        .collection('chatRoomData')
+        .doc(room)
+        .update(({
+          'activeUsers': FieldValue.arrayUnion([
+            {'name': _name, 'photoUrl': _photoUrl, 'uid': _uid}
+          ])
+        }));
+  }
+
   @override
   Widget build(BuildContext context) {
     var value = widget.value;
@@ -119,6 +130,7 @@ class _CircuitTimeState extends State<CircuitTime> {
                                 log('test:$chatRoom');
                                 addCircuit(chatRoom);
                                 loggedUser();
+                                addChat(chatRoom);
 
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {

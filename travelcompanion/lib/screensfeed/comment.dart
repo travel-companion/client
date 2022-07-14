@@ -30,7 +30,7 @@ class Comment extends StatefulWidget {
 
 class _CommentState extends State<Comment> {
   List<dynamic> allLines = [];
-  List<dynamic> filterdLines = [];
+  String searchString = "";
   List<dynamic> linesid = [];
   final controller = TextEditingController();
   final Stream<QuerySnapshot> commentsStream =
@@ -150,6 +150,8 @@ class _CommentState extends State<Comment> {
     CollectionReference comments =
         FirebaseFirestore.instance.collection("comments");
     return Scaffold(
+           resizeToAvoidBottomInset : false,
+
       appBar: AppBar(
         title: Text("Comment Page"),
         backgroundColor: Colors.amber,
@@ -189,17 +191,19 @@ class _CommentState extends State<Comment> {
             decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: "search lines",
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(
+                contentPadding:const  EdgeInsets.all(20.0),
+                border:const OutlineInputBorder(
+                    borderRadius:BorderRadius.all(Radius.circular(30)),
+                    borderSide:  BorderSide(
                         color: Color.fromARGB(255, 243, 233, 33))),
                 suffixIcon: CircleAvatar(
                   radius: 20,
                   backgroundImage: NetworkImage(widget.photoUrlUser),
                 )),
             onChanged: (String value) {
-              var temp = allLines;
-              searchline(value, allLines);
+                          setState((){
+                             searchString = value; 
+                          });
             },
           ),
         ),
@@ -207,17 +211,7 @@ class _CommentState extends State<Comment> {
             child: FutureBuilder(
           future: getLines(),
           builder: (context, snapshot) {
-            if (filterdLines.isNotEmpty) {
-              return ListView.builder(
-                itemCount: filterdLines.length,
-                itemBuilder: ((context, index) {
-                  return ListTile(
-                    leading: Icon(Icons.train),
-                    title: Text(filterdLines[index]['ref']),
-                  );
-                }),
-              );
-            }
+            
             if (allLines == null) {
               return Text("Document does not exist");
             } else {
@@ -225,7 +219,7 @@ class _CommentState extends State<Comment> {
               return ListView.builder(
                 itemCount: allLines.length,
                 itemBuilder: ((context, index) {
-                  return ListTile(
+                  return allLines[index]['ref'].toString().toLowerCase().contains(searchString)? ListTile(
                     leading: Icon(Icons.train),
                     title: Text(allLines[index]['ref']),
                     onTap: () => {
@@ -239,10 +233,11 @@ class _CommentState extends State<Comment> {
                           }),
                            Navigator.push(
                               context, MaterialPageRoute(builder: (context) => 
-                              FeedPublication( emailUser:widget.emailUser,nameUser:widget.nameUser,photoUrlUser:widget.photoUrlUser,idUser:widget.idUser))),
+                              FeedPublication( emailUser:widget.emailUser,nameUser:widget.nameUser,photoUrlUser:widget.photoUrlUser,idUser:widget.idUser))
+                              ),
                           
                     },
-                  );
+                  ):Container();
                 }),
               );
             }
@@ -252,16 +247,4 @@ class _CommentState extends State<Comment> {
     );
   }
 
-  void searchline(String query, List lines) {
-    final suggestions = lines.where((line) {
-      final ref = line['ref'].toString().toLowerCase();
-      final input = query.toLowerCase();
-      return ref.contains(input);
-    }).toList();
-    setState(() {
-      (() => filterdLines = suggestions);
-    });
-
-    log('mmm$filterdLines');
-  }
 }

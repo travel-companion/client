@@ -1,11 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:travelcompanion/Chat_Side/main_chat.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../userProfil.dart';
 class CartItem extends StatefulWidget {
   final roomName;
+  final userId;
   const CartItem({
     Key? key,
     required this.roomName,
+    required this.userId,
   }) : super(key: key);
   @override
   cardItem createState() => cardItem();
@@ -21,6 +26,20 @@ class cardItem extends State<CartItem> {
                     roomNameDesu: widget.roomName,
                   )));
     });
+  }
+
+  _delete(name) async {
+    DocumentReference _userLines =
+        FirebaseFirestore.instance.collection('UserData').doc(widget.userId);
+    await _userLines.get().then((value) => {
+          log(value['userLines'].toString()),
+          _userLines.update({
+            "userLines": value['userLines'].where((i) => i != name).toList()
+          }).then((value) => Navigator.push(
+                              context, MaterialPageRoute(builder: (context) => 
+                              UserProfil())
+                              ) )
+        });
   }
 
   @override
@@ -64,7 +83,18 @@ class cardItem extends State<CartItem> {
                           fontSize: 15.0,
                         ),
                       ),
-                    ])
+                    ]),
+                IconButton(
+                  padding: EdgeInsets.only(left: 30.0),
+                  onPressed: () {
+                    _delete(name);
+                  },
+                  icon: const Icon(
+                    Icons.delete,
+                    size: 33,
+                    color: Color.fromARGB(255, 201, 18, 18),
+                  ),
+                )
               ]),
         ),
       ),
