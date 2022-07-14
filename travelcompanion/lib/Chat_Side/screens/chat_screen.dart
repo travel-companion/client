@@ -31,7 +31,7 @@ class ChatHome extends StatelessWidget {
       MessagesPage(
         roomNameDesu: roomNameDesu,
       ),
-      ReportPage(),
+      ReportPage(roomNameDesu: roomNameDesu,),
       const CallsPage(),
       const ContactsPage(),
     ];
