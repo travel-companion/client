@@ -5,8 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-void main() => runApp(CircuitMap());
-
 class CircuitMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -79,24 +77,6 @@ class MapSampleState extends State<MapSample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 15,
-        backgroundColor: const Color.fromARGB(255, 255, 174, 0),
-        leading: IconButton(
-          onPressed: (() {
-            Navigator.of(context).pop();
-          }),
-          icon: const Icon(
-            Icons.arrow_back,
-            size: 30,
-            color: Colors.black,
-          ),
-        ),
-        title: const Text(
-          'Localization',
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
       body: Column(
         children: [
           Expanded(
