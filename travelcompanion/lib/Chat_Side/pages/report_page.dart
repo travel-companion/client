@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../main_chat.dart';
 
 class ReportPage extends StatefulWidget {
   final roomNameDesu;
@@ -66,10 +67,16 @@ class _ReportPageState extends State<ReportPage> {
                     FirebaseFirestore.instance
                         .collection("chatRoomData")
                         .doc(widget.roomNameDesu)
-                        .update({'alert':selectedTest})
-                        .then((value) =>{
-                          log('ok')
-                        });
+                        .update({'alert': selectedTest}).then((value) => {
+                              setState(() {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Chat(
+                                              roomNameDesu: widget.roomNameDesu,
+                                            )));
+                              }),
+                            });
                   },
                 ),
               ),

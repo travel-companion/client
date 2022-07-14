@@ -54,6 +54,60 @@ class _MessagesPageState extends State<MessagesPage> {
       child: Scaffold(
         body: CustomScrollView(
           slivers: [
+             SliverToBoxAdapter(
+              child:Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14.0),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 17.0),
+          child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  onPressed: () {
+                  },
+                  icon: const Icon(
+                    Icons.question_answer_sharp,
+                    size: 33,
+                    color: Color.fromARGB(255, 175, 140, 36),
+                  ),
+                ),
+                const SizedBox(width: 15.0),
+                Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        "name",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0,
+                        ),
+                      ),
+                      const SizedBox(height: 2.0),
+                      const Text(
+                        "Circuit Barcelone => La Marsa",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                    ]),
+                IconButton(
+                  padding: EdgeInsets.only(left: 30.0),
+                  onPressed: () {
+                  },
+                  icon: const Icon(
+                    Icons.delete,
+                    size: 33,
+                    color: Color.fromARGB(255, 201, 18, 18),
+                  ),
+                )
+              ]),
+        ),
+      ),
+    ),
+            ),
             const SliverToBoxAdapter(
               child: _Stories(), //AKA member list of the specific circuit
             ),
