@@ -1,42 +1,50 @@
-import '../dummy.dart';
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../themes.dart';
 import '../widgets/avatar.dart';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import 'package:faker/faker.dart';
-import 'package:jiffy/jiffy.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-// class MessageBox extends StatelessWidget {
-//   const MessageBox({Key? key}) : super(key: key);
+class MessagesPage extends StatefulWidget {
+  final roomNameDesu;
+  const MessagesPage({
+    required this.roomNameDesu,
+    Key? key,
+  }) : super(key: key);
 
-//   @override
-//   Widget build(BuildContext context) {
-//     //Maybe put data in a var here
+  @override
+  State<MessagesPage> createState() => _MessagesPageState();
+}
 
-//     return const ListTile(
-//       leading: CircleAvatar(
-//         radius: 25,
-//       ),
-//       title: Text(
-//         "Name here",
-//         style: TextStyle(
-//           fontSize: 16,
-//           fontWeight: FontWeight.bold,
-//         ),
-//       ),
-//       subtitle: Text(
-//         "Message here",
-//         style: TextStyle(
-//           fontSize: 13,
-//         ),
-//       ),
-//       trailing: Text('Time here'),
-//     );
-//   }
-// }
+class _MessagesPageState extends State<MessagesPage> {
+  // final roomName = widget.roomNameDesu;
+  // Stream<QuerySnapshot<dynamic>> chat =
+  //     FirebaseFirestore.instance.collection(widget.roomNameDesu).snapshots();
+  final controller = TextEditingController();
+  String? _name;
+  String? _photoUrl;
+  String? _uid;
 
-class MessagesPage extends StatelessWidget {
-  const MessagesPage({Key? key}) : super(key: key);
+  String message = '';
+
+  loggedUser() async {
+    final user = FirebaseAuth.instance.currentUser!;
+    await FirebaseFirestore.instance
+        .collection('UserData')
+        .doc(user.uid)
+        .get()
+        .then((value) {
+      _name = value.data()!['name'];
+      _photoUrl = value.data()!['photoUrl'];
+      _uid = value.data()!['uid'];
+    });
+  }
+
+  var size;
 
   @override
   Widget build(BuildContext context) {
@@ -45,55 +53,166 @@ class MessagesPage extends StatelessWidget {
       child: Scaffold(
         body: CustomScrollView(
           slivers: [
-            const SliverToBoxAdapter(
-              child: _Stories(), //AKA member list of the specific circuit
+            SliverToBoxAdapter(
+              child: FutureBuilder(
+                future: FirebaseFirestore.instance
+                    .collection("chatRoomData")
+                    .doc(widget.roomNameDesu)
+                    .get(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("");
+                  }
+
+                  if (snapshot.hasData && !snapshot.data!.exists) {
+                    return Text("");
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    Map<String, dynamic> data =
+                        snapshot.data?.data() as Map<String, dynamic>;
+
+                    return data["alert"]!="NO INCIDENT"?
+                      Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 0.0, vertical: 0.0),
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                const SizedBox(width: 15.0),
+                                Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      const Padding(
+                                        padding: EdgeInsets.only(right: 8.0),
+                                        child: Icon(Icons.bus_alert_rounded,
+                                            color: Colors.red),
+                                      ),
+                                      const SizedBox(height: 1.0),
+                                      Text(
+                                        data["alert"],
+                                        style: TextStyle(
+                                          foreground: Paint()
+                                            ..color = Colors.red,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15.0,
+                                        ),
+                                      )
+                                    ]),
+                              ]),
+                        ),
+                      ),
+                    ):Text("");
+                  }
+                  return Text("");
+                },
+              ),
+
+              //knkn
             ),
             SliverToBoxAdapter(
-              child: TextField(
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  hintText: 'help us god',
-                  suffixIcon: IconButton(
-                      onPressed: () {}, icon: const Icon(Icons.send)),
-                ),
-              ),
+              child: _Stories(
+                roomNameDesu: widget.roomNameDesu,
+              ), //AKA member list of the specific circuit
             ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(_delegate),
-            ),
+            SliverToBoxAdapter(child: text(context)),
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection(widget.roomNameDesu)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text("error");
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SliverList(
+                      delegate:
+                          SliverChildBuilderDelegate(_delegate, childCount: 0),
+                    );
+                  }
+                  final data = snapshot.requireData;
+                  // log(data.size.toString());
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(_delegate,
+                        childCount: data.size),
+                  );
+                }),
           ],
-        ),
+        ), //ndknsdk
       ),
     );
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Expanded(
-  //       child: Column(
-  //     children: [
-  //       const SizedBox(
-  //         child: _Stories(),
-  //       ),
-  //       ListView(
-  //         children: const [MessageBox()],
-  //       ),
-  //     ],
-  //   ));
-  // }
+  Widget text(BuildContext context) {
+    return TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          hintText: 'Send message',
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: () async {
+              await loggedUser();
+              var val = {
+                'content': message,
+                'pic': _photoUrl,
+                'time': DateTime.now(),
+                'user': _name,
+              };
+              FirebaseFirestore.instance
+                  .collection(widget.roomNameDesu)
+                  .add(val);
+              controller.clear();
+            },
+          ),
+        ),
+        onChanged: (String value) {
+          setState(() {
+            message = value;
+          });
+        });
+  }
 
   Widget _delegate(BuildContext context, int index) {
     //This should be refactored to get from Firestore now
-    final Faker faker = Faker();
-    final date = Helpers.randomDate();
-    return _MessageTitle(
-        messageData: MessageData(
-      senderName: faker.person.name(),
-      message: faker.lorem.sentence(),
-      messageDate: date,
-      dateMessage: Jiffy(date).fromNow(),
-      profilePicture: Helpers.randomPictureUrl(),
-    ));
+    return StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection(widget.roomNameDesu)
+            .orderBy('time', descending: true)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Text("error");
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text("waiting");
+          }
+          final data = snapshot.requireData;
+          // dynamic chatRoom;
+          // for (var i = 0; i < data.size; i++) {
+          //   if (data.docs[i].id == widget.roomNameDesu) {
+          //     chatRoom = data.docs[i].data();
+          //     size = chatRoom['messages'].length;
+          //   }
+          // }
+          // log(index.toString());
+          return _MessageTitle(
+            messageData: MessageData(
+              senderName: data.docs[index]['user'],
+              message: data.docs[index]['content'],
+              messageDate: data.docs[index]['time'].toDate(),
+              dateMessage: data.docs[index]['time'].toDate().toString(),
+              profilePicture: data.docs[index]['pic'],
+            ),
+          );
+        });
   }
 }
 
@@ -110,7 +229,7 @@ class _MessageTitle extends StatelessWidget {
     return InkWell(
       onTap: () {},
       child: Container(
-        height: 120,
+        height: 160,
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: const BoxDecoration(
           border: Border(
@@ -183,51 +302,77 @@ class _MessageTitle extends StatelessWidget {
 }
 
 class _Stories extends StatelessWidget {
-  const _Stories({Key? key}) : super(key: key);
+  final roomNameDesu;
+  final membersList = [];
+  _Stories({
+    required this.roomNameDesu,
+    Key? key,
+  }) : super(key: key);
+
+  getParticipants() async {
+    await FirebaseFirestore.instance
+        .collection('chatRoomData')
+        .doc(roomNameDesu)
+        .get()
+        .then((value) {
+      {
+        print(value.data()?['activeUsers']);
+        value.data()?['activeUsers'].forEach((val) {
+          // log(val.toString());
+          membersList.add(val);
+          log(membersList[0]['photoUrl']);
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: SizedBox(
-        height: 134,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 6, bottom: 7),
-              child: Text(
-                //THIS SHOULD BE THE CIRCUIT NAME INSTEAD //Not really because circuit name is on top now
-                'Members',
-                style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 15,
-                    color: AppColors.textFaded),
+    return FutureBuilder(
+        future: getParticipants(),
+        builder: (context, snapshot) {
+          return Card(
+            child: SizedBox(
+              height: 134,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0, top: 6, bottom: 7),
+                    child: Text(
+                      //THIS SHOULD BE THE CIRCUIT NAME INSTEAD //Not really because circuit name is on top now
+                      'Members',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
+                          color: AppColors.textFaded),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: membersList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          //Get data from: Map on UserData then check UserLines and if TOP LINE NAME included in UserLines array, then add user in a list here to map on and show.
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: 67,
+                              child: _StoryCard(
+                                storyData: StoryData(
+                                  name: membersList[index]['name'],
+                                  url: membersList[index]['photoUrl'],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                  )
+                ],
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) {
-                    //Get data from: Map on UserData then check UserLines and if TOP LINE NAME included in UserLines array, then add user in a list here to map on and show.
-                    final faker = Faker();
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: 67,
-                        child: _StoryCard(
-                          storyData: StoryData(
-                            name: faker.person.name(),
-                            url: Helpers.randomPictureUrl(),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-            )
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 }
 

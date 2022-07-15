@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'clipper.dart';
@@ -105,15 +107,17 @@ class _StackContainerState extends State<StackContainer> {
               child: SizedBox(
             width: 180.0,
             height: 180.0,
-            child: (_imageFile != null)
-                ? Image.file(
-                    _imageFile!,
+            child: (_photoUrl != null)?
+            Image.network(
+                    _photoUrl.toString(),  
                     fit: BoxFit.fill,
                   )
+                //  Image.file(
+                //     _imageFile!,
+                //     fit: BoxFit.fill,
+                //   )
                 : Image.network(
-
                     'https://previews.123rf.com/images/carynpereira/carynpereira1102/carynpereira110200022/8886088-zebra-face.jpg',
-
                     fit: BoxFit.fill,
                   ),
           )),
@@ -135,7 +139,7 @@ class _StackContainerState extends State<StackContainer> {
             ),
           ),
         ),
-        SizedBox(width: 30),
+        const SizedBox(width: 30),
         Positioned(
           bottom: 12.0,
           left: 0,

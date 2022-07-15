@@ -5,10 +5,8 @@ import 'screens/screens.dart';
 final appTheme = AppTheme();
 
 class Chat extends StatelessWidget {
-  final name;
   final roomNameDesu;
-  const Chat({required this.roomNameDesu, this.name, Key? key})
-      : super(key: key);
+  const Chat({required this.roomNameDesu, Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -19,7 +17,6 @@ class Chat extends StatelessWidget {
       themeMode: ThemeMode.dark,
       title: 'Chat',
       home: ChatHome(
-        roomName: name,
         roomNameDesu: roomNameDesu,
       ),
     );
