@@ -54,6 +54,69 @@ class _MessagesPageState extends State<MessagesPage> {
         body: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
+              child: FutureBuilder(
+                future: FirebaseFirestore.instance
+                    .collection("chatRoomData")
+                    .doc(widget.roomNameDesu)
+                    .get(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("");
+                  }
+
+                  if (snapshot.hasData && !snapshot.data!.exists) {
+                    return Text("");
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    Map<String, dynamic> data =
+                        snapshot.data?.data() as Map<String, dynamic>;
+
+                    return data["alert"]!="NO INCIDENT"?
+                      Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 0.0, vertical: 0.0),
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                const SizedBox(width: 15.0),
+                                Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      const Padding(
+                                        padding: EdgeInsets.only(right: 8.0),
+                                        child: Icon(Icons.bus_alert_rounded,
+                                            color: Colors.red),
+                                      ),
+                                      const SizedBox(height: 1.0),
+                                      Text(
+                                        data["alert"],
+                                        style: TextStyle(
+                                          foreground: Paint()
+                                            ..color = Colors.red,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15.0,
+                                        ),
+                                      )
+                                    ]),
+                              ]),
+                        ),
+                      ),
+                    ):Text("");
+                  }
+                  return Text("");
+                },
+              ),
+
+              //knkn
+            ),
+            SliverToBoxAdapter(
               child: _Stories(
                 roomNameDesu: widget.roomNameDesu,
               ), //AKA member list of the specific circuit
@@ -291,7 +354,6 @@ class _Stories extends StatelessWidget {
                         itemCount: membersList.length,
                         itemBuilder: (BuildContext context, int index) {
                           //Get data from: Map on UserData then check UserLines and if TOP LINE NAME included in UserLines array, then add user in a list here to map on and show.
-                          final faker = Faker();
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
