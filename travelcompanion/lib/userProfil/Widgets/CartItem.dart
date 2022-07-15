@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:travelcompanion/Chat_Side/main_chat.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../userProfil.dart';
+
 class CartItem extends StatefulWidget {
   final roomName;
   final userId;
@@ -36,9 +37,7 @@ class cardItem extends State<CartItem> {
           _userLines.update({
             "userLines": value['userLines'].where((i) => i != name).toList()
           }).then((value) => Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => 
-                              UserProfil())
-                              ) )
+              context, MaterialPageRoute(builder: (context) => UserProfil())))
         });
   }
 
@@ -85,7 +84,7 @@ class cardItem extends State<CartItem> {
                       ),
                     ]),
                 IconButton(
-                  padding: EdgeInsets.only(left: 30.0),
+                  padding: const EdgeInsets.only(left: 30.0),
                   onPressed: () {
                     _delete(name);
                   },
