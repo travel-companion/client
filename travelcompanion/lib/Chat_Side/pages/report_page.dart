@@ -13,8 +13,8 @@ class ReportPage extends StatefulWidget {
 }
 
 class _ReportPageState extends State<ReportPage> {
-  List<String> tests = ['Late', 'Broke down', 'Full'];
-  String? selectedTest = 'Late';
+  List<String> tests = ['NO INCIDENT','LATE', 'BROKE DOWN', 'FULL'];
+  String? selectedTest = 'NO INCIDENT';
   DocumentReference chatRoomData =
       FirebaseFirestore.instance.collection("chatRoomData").doc();
   @override
