@@ -1,26 +1,76 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class CircuitMap extends StatelessWidget {
+  var markerDataList = [];
+  // var markerList = [];
+  late List<Marker> markerList = [];
+  getMarkers() async {
+    //
+    await FirebaseFirestore.instance.collection('stops').get().then(
+          (value) => value.docs.forEach((element) {
+            var gPoint = element.data()['position'] as GeoPoint;
+            markerDataList.add({
+              'lat': gPoint.latitude,
+              'lon': gPoint.longitude,
+              'city': element.data()['city'],
+              'name': element.data()['name'],
+              'type': element.data()['type'],
+              'all': element.data()['all']
+            });
+            markerList.add(Marker(
+                markerId: MarkerId(element.data()['city']),
+                infoWindow: InfoWindow(title: element.data()['name']),
+                icon: BitmapDescriptor.defaultMarker,
+                position: LatLng(gPoint.latitude, gPoint.longitude)));
+            // log(gPoint.latitude.toString());
+            // markerList.add(element.data()); //Push all data in this array
+            // log(markerList[0]['position'].toString());
+            // for (var i = 0; i <= markerList.length; i++) {
+            // var geoPoint = markerList[0]['position'] as GeoPoint;
+            // log(geoPoint.latitude.toString());
+            //   // markerList[i]['position'] = {
+            //   //   'lat': geoPoint.latitude,
+            //   //   'long': geoPoint.longitude
+            //   // };
+            // }
+            // log(markerList.toString());
+            // log(markerList.toString());
+          }),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
+    getMarkers();
     return MaterialApp(
       title: 'Flutter Google Maps Demo',
-      home: MapSample(),
+      home: MapSample(markerList: markerList),
     );
   }
 }
 
 class MapSample extends StatefulWidget {
+  final markerList;
+  const MapSample({
+    required this.markerList,
+    Key? key,
+  });
   @override
-  State<MapSample> createState() => MapSampleState();
+  State<MapSample> createState() => MapSampleState(markerList: markerList);
 }
 
 class MapSampleState extends State<MapSample> {
+  final markerList;
+  MapSampleState({
+    required this.markerList,
+    Key? key,
+  });
   final Completer<GoogleMapController> _controller = Completer();
   final TextEditingController _searchController = TextEditingController();
 
@@ -56,11 +106,11 @@ class MapSampleState extends State<MapSample> {
     zoom: 14.4746,
   );
 
-  static const Marker _GooglePlexMarker = Marker(
+  static const Marker Charguia = Marker(
       markerId: MarkerId('_kGooglePlex'),
-      infoWindow: InfoWindow(title: 'USA Libya'),
+      infoWindow: InfoWindow(title: 'station bus la charguia 1'),
       icon: BitmapDescriptor.defaultMarker,
-      position: LatLng(37.42796133580664, -122.085749655962));
+      position: LatLng(36.8392, -10.2045));
 
   static const CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
@@ -74,24 +124,40 @@ class MapSampleState extends State<MapSample> {
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta),
       position: const LatLng(37.43296265331129, -122.08832357078792));
 
+  balls() {
+    markerList.forEach((marker) {
+      print(marker);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
           Expanded(
-            child: GoogleMap(
-              mapType: MapType.normal,
-              myLocationEnabled: true,
-              markers: {_GooglePlexMarker, LakeMarker},
-              initialCameraPosition: _Tunisie,
-              zoomGesturesEnabled: true,
-              zoomControlsEnabled: true,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-                locatePosition();
-              },
-            ),
+            child: FutureBuilder(
+                future: null,
+                builder: (context, snapshot) {
+                  return GoogleMap(
+                    mapType: MapType.normal,
+                    myLocationEnabled: true,
+                    markers: {
+                      // markerList.forEach((marker) async {
+                      //   return await marker;
+                      // })
+                      LakeMarker
+                    },
+                    initialCameraPosition: _Tunisie,
+                    zoomGesturesEnabled: true,
+                    zoomControlsEnabled: true,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                      locatePosition();
+                      balls();
+                    },
+                  );
+                }),
           ),
         ],
       ),
