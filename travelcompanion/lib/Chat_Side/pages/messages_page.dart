@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import 'package:faker/faker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:getwidget/getwidget.dart';
 
 class MessagesPage extends StatefulWidget {
   final roomNameDesu;
@@ -66,7 +68,11 @@ class _MessagesPageState extends State<MessagesPage> {
                   }
 
                   if (snapshot.hasData && !snapshot.data!.exists) {
-                    return Text("");
+                    const GFLoader(
+                      type: GFLoaderType.android,
+                      size:GFSize.MEDIUM,
+                     );
+
                   }
 
                   if (snapshot.connectionState == ConnectionState.done) {
@@ -192,17 +198,9 @@ class _MessagesPageState extends State<MessagesPage> {
             return const Text("error");
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text("waiting");
+            return const GFLoader();
           }
           final data = snapshot.requireData;
-          // dynamic chatRoom;
-          // for (var i = 0; i < data.size; i++) {
-          //   if (data.docs[i].id == widget.roomNameDesu) {
-          //     chatRoom = data.docs[i].data();
-          //     size = chatRoom['messages'].length;
-          //   }
-          // }
-          // log(index.toString());
           return _MessageTitle(
             messageData: MessageData(
               senderName: data.docs[index]['user'],

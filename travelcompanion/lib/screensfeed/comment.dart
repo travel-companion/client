@@ -7,6 +7,7 @@ import 'package:filter_list/filter_list.dart';
 import 'Feed/feed/feed.dart';
 import '../userProfil/userProfil.dart';
 import '../circuits/circuitTime.dart';
+import 'package:getwidget/getwidget.dart';
 
 class Comment extends StatefulWidget {
   final dynamic c;
@@ -168,7 +169,8 @@ class _CommentState extends State<Comment> {
                   return Text("error");
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Text("waiting");
+                  return const GFLoader(type: GFLoaderType.android,
+                      size:GFSize.MEDIUM,);
                 }
                 if(snapshot.requireData.docs.isEmpty){
                   return Text("no comments");

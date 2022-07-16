@@ -45,6 +45,7 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   geoflutterfire: ^3.0.3
   geolocator: ^9.0.0
+  getwidget: ^3.0.1
   google_fonts: ^3.0.1
   google_maps_flutter: ^2.1.8
   google_sign_in: ^5.3.3

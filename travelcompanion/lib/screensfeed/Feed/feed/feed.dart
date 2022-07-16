@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:developer';
-
 import '../../../userProfil/userProfil.dart';
 import 'cartItem.dart';
+import 'package:getwidget/getwidget.dart';
+
 
 class FeedPublication extends StatefulWidget {
   final dynamic emailUser;
@@ -83,7 +84,8 @@ class _FeedPublicationState extends State<FeedPublication> {
                       return const Text("error");
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Text("waiting");
+                      return  const GFLoader(type: GFLoaderType.android,
+                      size:GFSize.MEDIUM,);
                     }
                     final data = snapshot.requireData;
                     return ListView.builder(
