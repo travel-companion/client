@@ -9,7 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 class CircuitMap extends StatelessWidget {
   var markerDataList = [];
   // var markerList = [];
-  late List<Marker> markerList = [];
+  late Set<Marker> markerList = {};
   getMarkers() async {
     //
     await FirebaseFirestore.instance.collection('stops').get().then(
@@ -28,30 +28,20 @@ class CircuitMap extends StatelessWidget {
                 infoWindow: InfoWindow(title: element.data()['name']),
                 icon: BitmapDescriptor.defaultMarker,
                 position: LatLng(gPoint.latitude, gPoint.longitude)));
-            // log(gPoint.latitude.toString());
-            // markerList.add(element.data()); //Push all data in this array
-            // log(markerList[0]['position'].toString());
-            // for (var i = 0; i <= markerList.length; i++) {
-            // var geoPoint = markerList[0]['position'] as GeoPoint;
-            // log(geoPoint.latitude.toString());
-            //   // markerList[i]['position'] = {
-            //   //   'lat': geoPoint.latitude,
-            //   //   'long': geoPoint.longitude
-            //   // };
-            // }
-            // log(markerList.toString());
-            // log(markerList.toString());
           }),
         );
   }
 
   @override
   Widget build(BuildContext context) {
-    getMarkers();
-    return MaterialApp(
-      title: 'Flutter Google Maps Demo',
-      home: MapSample(markerList: markerList),
-    );
+    return FutureBuilder(
+        future: getMarkers(),
+        builder: (context, snapshot) {
+          return MaterialApp(
+            title: 'Flutter Google Maps Demo',
+            home: MapSample(markerList: markerList),
+          );
+        });
   }
 }
 
@@ -124,10 +114,22 @@ class MapSampleState extends State<MapSample> {
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta),
       position: const LatLng(37.43296265331129, -122.08832357078792));
 
-  balls() {
-    markerList.forEach((marker) {
-      print(marker);
-    });
+  var markerData = [];
+  // var markerList = [];
+  late List<Marker> markers = [];
+  getMarkers() async {
+    //
+    await FirebaseFirestore.instance.collection('stops').get().then(
+          (value) => value.docs.forEach((element) {
+            var gPoint = element.data()['position'] as GeoPoint;
+            markers.add(Marker(
+                markerId: MarkerId(element.data()['city']),
+                infoWindow: InfoWindow(title: element.data()['name']),
+                icon: BitmapDescriptor.defaultMarker,
+                position: LatLng(gPoint.latitude, gPoint.longitude)));
+          }),
+        );
+    return markers;
   }
 
   @override
@@ -137,26 +139,27 @@ class MapSampleState extends State<MapSample> {
         children: [
           Expanded(
             child: FutureBuilder(
-                future: null,
+                future: getMarkers(),
                 builder: (context, snapshot) {
-                  return GoogleMap(
-                    mapType: MapType.normal,
-                    myLocationEnabled: true,
-                    markers: {
-                      // markerList.forEach((marker) async {
-                      //   return await marker;
-                      // })
-                      LakeMarker
-                    },
-                    initialCameraPosition: _Tunisie,
-                    zoomGesturesEnabled: true,
-                    zoomControlsEnabled: true,
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
-                      locatePosition();
-                      balls();
-                    },
-                  );
+                  if (snapshot.hasError) {
+                    return const Text("");
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return GoogleMap(
+                      mapType: MapType.normal,
+                      myLocationEnabled: true,
+                      markers: <Marker>{...markers},
+                      initialCameraPosition: _Tunisie,
+                      zoomGesturesEnabled: true,
+                      zoomControlsEnabled: true,
+                      onMapCreated: (GoogleMapController controller) {
+                        _controller.complete(controller);
+                        locatePosition();
+                      },
+                    );
+                  }
+                  return const Text("data");
                 }),
           ),
         ],
