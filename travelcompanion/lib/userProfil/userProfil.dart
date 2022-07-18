@@ -74,12 +74,9 @@ class _UserProfilState extends State<UserProfil> {
             int? length;
             if (_userLines == null) {
               length = 0;
-              log("s1");
             } else {
               length = _userLines?.length;
-              log('s2');
             }
-            log('$length');
             return Column(
               children: <Widget>[
                 StackContainer(),

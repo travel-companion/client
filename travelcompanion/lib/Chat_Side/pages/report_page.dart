@@ -63,7 +63,6 @@ class _ReportPageState extends State<ReportPage> {
                     size: 80,
                   ),
                   onPressed: () {
-                    log(widget.roomNameDesu);
                     FirebaseFirestore.instance
                         .collection("chatRoomData")
                         .doc(widget.roomNameDesu)

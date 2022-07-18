@@ -21,7 +21,7 @@ class FeedPublication extends StatefulWidget {
 
 class _FeedPublicationState extends State<FeedPublication> {
   final Stream<QuerySnapshot> post1 =
-      FirebaseFirestore.instance.collection('posts').snapshots();
+      FirebaseFirestore.instance.collection('posts').orderBy('time', descending: true).snapshots();
   final formKey = GlobalKey<FormState>();
   final TextEditingController commentController = TextEditingController();
 
@@ -34,7 +34,6 @@ class _FeedPublicationState extends State<FeedPublication> {
 
   @override
   Widget build(BuildContext context) {
-    log(widget.photoUrlUser.toString());
     CollectionReference posts = FirebaseFirestore.instance.collection("posts");
     Size size = MediaQuery.of(context).size;
 
@@ -91,12 +90,12 @@ class _FeedPublicationState extends State<FeedPublication> {
                     return ListView.builder(
                       itemCount: data.size,
                       itemBuilder: ((context, index) => CardItemTest(
-                          data.docs[index]['time'],
+                          data.docs[index]['time'].toDate().toString(),
                           data.docs[index]['content'],
                           data.docs[index]['user'],
                           data.docs[index]['comments'],
                           data.docs[index]['pic'],
-                          data.docs[index].id,
+                          data.docs[index].id, 
                           widget.emailUser,
                           widget.nameUser,
                           widget.photoUrlUser,
@@ -108,7 +107,6 @@ class _FeedPublicationState extends State<FeedPublication> {
                 errorText: 'Comment cannot be blank',
                 sendButtonMethod: () {
                   if (formKey.currentState!.validate()) {
-                    log(widget.idUser.toString());
                     setState(() {
                       var value = {
                         'idUser': widget.idUser,

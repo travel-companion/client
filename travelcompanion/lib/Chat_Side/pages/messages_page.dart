@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -144,7 +143,6 @@ class _MessagesPageState extends State<MessagesPage> {
                     );
                   }
                   final data = snapshot.requireData;
-                  // log(data.size.toString());
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(_delegate,
                         childCount: data.size),
@@ -314,11 +312,8 @@ class _Stories extends StatelessWidget {
         .get()
         .then((value) {
       {
-        print(value.data()?['activeUsers']);
         value.data()?['activeUsers'].forEach((val) {
-          // log(val.toString());
           membersList.add(val);
-          log(membersList[0]['photoUrl']);
         });
       }
     });

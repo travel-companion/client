@@ -33,7 +33,6 @@ class ChatHome extends StatelessWidget {
       _name = value.data()!['name'];
       _photoUrl = value.data()!['photoUrl'];
     });
-    log(_photoUrl.toString());
   }
 
   void _onNavigationItemSelected(i) {
@@ -78,7 +77,6 @@ class ChatHome extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: BackButton(
                   onPressed: () {
-                    log('value$roomNameDesu');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -89,11 +87,7 @@ class ChatHome extends StatelessWidget {
                     );
                   },
                 ),
-                // child: IconBackground(
-                //     icon: Icons.search,
-                //     onTap: () {
-                //       print('SEARCH');
-                //     }),
+               
               ),
               actions: [
                 //Own avatar icon
