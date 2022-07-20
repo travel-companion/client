@@ -28,6 +28,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
+            resizeToAvoidBottomInset: false,
+
       body: Background(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

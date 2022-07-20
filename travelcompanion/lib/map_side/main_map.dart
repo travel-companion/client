@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -6,30 +7,62 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class CircuitMap extends StatelessWidget {
+class CircuitMap extends StatefulWidget {
+  final roomNameDesu;
+  const CircuitMap({Key? key, this.roomNameDesu}) : super(key: key);
+  @override
+  State<CircuitMap> createState() => _CircuitMapState();
+}
+
+class _CircuitMapState extends State<CircuitMap> {
   var markerDataList = [];
+
   // var markerList = [];
   late Set<Marker> markerList = {};
+
   getMarkers() async {
     //
-    await FirebaseFirestore.instance.collection('stops').get().then(
-          (value) => value.docs.forEach((element) {
-            var gPoint = element.data()['position'] as GeoPoint;
-            markerDataList.add({
-              'lat': gPoint.latitude,
-              'lon': gPoint.longitude,
-              'city': element.data()['city'],
-              'name': element.data()['name'],
-              'type': element.data()['type'],
-              'all': element.data()['all']
+
+    await FirebaseFirestore.instance
+        .collection('chatRoomData')
+        .doc(widget.roomNameDesu)
+        .get()
+        .then(
+      (value) async {
+        Map data = value.data() as Map<String, dynamic>;
+        await FirebaseFirestore.instance
+            .collection("lines")
+            .doc(data["line"])
+            .get()
+            .then((val) {
+          Map data2 = val.data() as Map<String, dynamic>;
+          var allcircuit = [
+            data2["depart"],
+            ...data2["circuit"],
+            data2["dest"]
+          ];
+          allcircuit.forEach((element) async {
+            await FirebaseFirestore.instance
+                .collection("stops")
+                .doc(element)
+                .get()
+                .then((v) {
+              Map data3 = v.data() as Map<String, dynamic>;
+              var gPoint = data3['position'] as GeoPoint;
+              
+              markerList.add(Marker(
+                  markerId: MarkerId(data3['city']),
+                  infoWindow: InfoWindow(title: data3['name']),
+                  icon: BitmapDescriptor.defaultMarker,
+                  position: LatLng(gPoint.latitude, gPoint.longitude)));
             });
-            markerList.add(Marker(
-                markerId: MarkerId(element.data()['city']),
-                infoWindow: InfoWindow(title: element.data()['name']),
-                icon: BitmapDescriptor.defaultMarker,
-                position: LatLng(gPoint.latitude, gPoint.longitude)));
-          }),
-        );
+          });
+        });
+
+        
+    
+      },
+    );
   }
 
   @override
@@ -164,11 +197,7 @@ class MapSampleState extends State<MapSample> {
           ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: _goToTheLake,
-      //   label: const Text('To the lake!'),
-      //   icon: const Icon(Icons.directions_boat),
-      // ),
+     
     );
   }
 

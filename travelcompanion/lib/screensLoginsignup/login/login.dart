@@ -32,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
+                  resizeToAvoidBottomInset: false,
+
       body: Background(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

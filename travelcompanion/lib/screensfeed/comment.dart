@@ -8,6 +8,7 @@ import 'Feed/feed/feed.dart';
 import '../userProfil/userProfil.dart';
 import '../circuits/circuitTime.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:badges/badges.dart';
 
 class Comment extends StatefulWidget {
   final dynamic c;
@@ -44,80 +45,205 @@ class _CommentState extends State<Comment> {
         FirebaseFirestore.instance.doc('UserData/$user');
     DocumentReference lineinfo =
         FirebaseFirestore.instance.collection("lines").doc(line);
-    CollectionReference linesInfo= FirebaseFirestore.instance.collection('lines');
-    
+    CollectionReference linesInfo =
+        FirebaseFirestore.instance.collection('lines');
+    positiveReview() async {
+      await userinfo.get().then((value) {
+        var uData=value.data() as Map<String, dynamic>;
+        log((uData["reviews"]!=null).toString());
+        if (uData["reviews"]!=null) {
+          if (!uData["reviews"]["ids"].contains(widget.idUser)) {
+            userinfo.update({
+              "reviews": {
+                "ids": [...uData["reviews"]["ids"],widget.idUser],
+                "count": uData["reviews"]["count"] + 1
+              }
+            });
+          }
+        } else {
+          userinfo.update({
+            "reviews": {
+              "ids":[widget.idUser],
+              "count": 1
+            }
+          });
+        }
+      });
+    }
 
+    negativeReview() async {
+      await userinfo.get().then((value) {
+        var uData=value.data() as Map<String, dynamic>;
+        if (uData["reviews"]!=null) {
+          if (!uData["reviews"]["ids"].contains(widget.idUser)) {
+            userinfo.update({
+              "reviews": {
+                "ids": [...uData["reviews"]["ids"],widget.idUser],
+                "count": uData["reviews"]["count"] - 1
+              }
+            });
+          }
+        } else {
+          userinfo.update({
+            "reviews": {
+              "ids":[widget.idUser],
+              "count": -1
+            }
+          });
+        }
+      });
+    }
     return SingleChildScrollView(
       child: Padding(
           padding: const EdgeInsets.fromLTRB(2.0, 8.0, 2.0, 0.0),
-          child: FutureBuilder<DocumentSnapshot>(
-            future: userinfo.get(),
-            builder: (BuildContext context,
-                AsyncSnapshot<DocumentSnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return Text("Something went wrong");
-              }
+          child: Column(
+            children: [
+              FutureBuilder<DocumentSnapshot>(
+                future: userinfo.get(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("Something went wrong");
+                  }
 
-              if (snapshot.hasData && !snapshot.data!.exists) {
-                return Text("Document does not exist");
-              }
+                  if (snapshot.hasData && !snapshot.data!.exists) {
+                    return Text("Document does not exist");
+                  }
 
-              if (snapshot.connectionState == ConnectionState.done) {
-                Map<String, dynamic> data =
-                    snapshot.data!.data() as Map<String, dynamic>;
-                return ListTile(
-                  leading: GestureDetector(
-                    onTap: () async {
-                       await linesInfo.doc(line).get().then((value) => {
-                            Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return CircuitTime(value:value.data());
-                                    }))  
-                        });
-          
-                    },
-                    child: Container(
-                      height: 50.0,
-                      width: 50.0,
-                      decoration: new BoxDecoration(
-                          color: Color.fromARGB(255, 243, 233, 33),
-                          borderRadius:
-                              new BorderRadius.all(Radius.circular(50))),
-                      child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: NetworkImage(data['photoUrl'])),
-                    ),
-                  ),
-                  title: Text(
-                    data["name"],
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: FutureBuilder<DocumentSnapshot>(
-                    future: lineinfo.get(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text("Something went wrong");
-                      }
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    Map<String, dynamic> data =
+                        snapshot.data!.data() as Map<String, dynamic>;
+                    return ListTile(
+                      leading: GestureDetector(
+                        onTap: () async {
+                          await linesInfo.doc(line).get().then((value) => {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return CircuitTime(value: value.data());
+                                }))
+                              });
+                        },
+                        child: Container(
+                          height: 50.0,
+                          width: 50.0,
+                          decoration: const BoxDecoration(
+                              color: Color.fromARGB(255, 243, 233, 33),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50))),
+                          child:FutureBuilder<DocumentSnapshot>(
+          future: userinfo.get(),
+          builder:
+              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return Text("Something went wrong");
+            }
 
-                      if (snapshot.hasData && !snapshot.data!.exists) {
-                        return Text("Document does not exist");
-                      }
+            if (snapshot.hasData && !snapshot.data!.exists) {
+              return Text("Document does not exist");
+            }
 
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        Map<String, dynamic> data =
-                            snapshot.data!.data() as Map<String, dynamic>;
-                        return Text(" ${data['ref']}");
-                      }
-
-                      return Text("loading");
-                    },
-                  ),
+            if (snapshot.connectionState == ConnectionState.done) {
+              Map<String, dynamic> data =
+                  snapshot.data!.data() as Map<String, dynamic>;
+              if (data["reviews"] == null || data["reviews"]["count"] == 0) {
+                return Badge(
+                  badgeColor: Colors.grey,
+                  child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage: NetworkImage(data['photoUrl'])
+                              ),
                 );
               }
+              else if(data["reviews"]["count"] > 0){
+                return Badge(
+                  badgeColor: Colors.green,
+                  child: CircleAvatar(
+                              radius: 50,
+                              backgroundImage: NetworkImage(data['photoUrl'])
+                              ),
+                );
+              }
+              else{
+                return Badge(
+                  badgeColor: Colors.red,
+                  child:CircleAvatar(
+                              radius: 50,
+                              backgroundImage: NetworkImage(data['photoUrl'])
+                              ),
+                ); 
+              }
+            }
 
-              return Text("loading");
-            },
+            return Text("loading");
+          },
+        ),
+                          
+                           
+                        ),
+                      ),
+                      title: Text(
+                        data["name"],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: FutureBuilder<DocumentSnapshot>(
+                        future: lineinfo.get(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<DocumentSnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text("Something went wrong");
+                          }
+
+                          if (snapshot.hasData && !snapshot.data!.exists) {
+                            return Text("Document does not exist");
+                          }
+
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            Map<String, dynamic> data =
+                                snapshot.data!.data() as Map<String, dynamic>;
+                            return Text(" ${data['ref']}");
+                          }
+
+                          return Text("loading");
+                        },
+                      ),
+                    );
+                  }
+
+                  return Text("loading");
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 5.0),
+                child: Container(
+                  height: 15.0,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          positiveReview();
+                        },
+                        icon: Icon(
+                          Icons.thumb_up,
+                          color: Colors.green,
+                          size: 20.0,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          negativeReview();
+                        },
+                        icon: Icon(
+                          Icons.thumb_down,
+                          color: Colors.red,
+                          size: 20.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
           )),
     );
   }
@@ -151,8 +277,7 @@ class _CommentState extends State<Comment> {
     CollectionReference comments =
         FirebaseFirestore.instance.collection("comments");
     return Scaffold(
-           resizeToAvoidBottomInset : false,
-
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Comment Page"),
         backgroundColor: Colors.amber,
@@ -169,10 +294,12 @@ class _CommentState extends State<Comment> {
                   return Text("error");
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const GFLoader(type: GFLoaderType.android,
-                      size:GFSize.MEDIUM,);
+                  return const GFLoader(
+                    type: GFLoaderType.android,
+                    size: GFSize.MEDIUM,
+                  );
                 }
-                if(snapshot.requireData.docs.isEmpty){
+                if (snapshot.requireData.docs.isEmpty) {
                   return Text("no comments");
                 }
                 final data = snapshot.requireData.docs
@@ -193,19 +320,19 @@ class _CommentState extends State<Comment> {
             decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: "search lines",
-                contentPadding:const  EdgeInsets.all(20.0),
-                border:const OutlineInputBorder(
-                    borderRadius:BorderRadius.all(Radius.circular(30)),
-                    borderSide:  BorderSide(
-                        color: Color.fromARGB(255, 243, 233, 33))),
+                contentPadding: const EdgeInsets.all(20.0),
+                border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
+                    borderSide:
+                        BorderSide(color: Color.fromARGB(255, 243, 233, 33))),
                 suffixIcon: CircleAvatar(
                   radius: 20,
                   backgroundImage: NetworkImage(widget.photoUrlUser),
                 )),
             onChanged: (String value) {
-                          setState((){
-                             searchString = value; 
-                          });
+              setState(() {
+                searchString = value;
+              });
             },
           ),
         ),
@@ -213,7 +340,6 @@ class _CommentState extends State<Comment> {
             child: FutureBuilder(
           future: getLines(),
           builder: (context, snapshot) {
-            
             if (allLines == null) {
               return Text("Document does not exist");
             } else {
@@ -221,25 +347,33 @@ class _CommentState extends State<Comment> {
               return ListView.builder(
                 itemCount: allLines.length,
                 itemBuilder: ((context, index) {
-                  return allLines[index]['ref'].toString().toLowerCase().contains(searchString)? ListTile(
-                    leading: Icon(Icons.train),
-                    title: Text(allLines[index]['ref']),
-                    onTap: () => {
-                      comments.add({
-                        'lines':linesid[index] ,
-                        'user':widget.idUser ,
-                      }).then((value) => {
-                            post.update({
-                              'comments': [...widget.c, value.id]
-                            })
-                          }),
-                           Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => 
-                              FeedPublication( emailUser:widget.emailUser,nameUser:widget.nameUser,photoUrlUser:widget.photoUrlUser,idUser:widget.idUser))
-                              ),
-                          
-                    },
-                  ):Container();
+                  return allLines[index]['ref']
+                          .toString()
+                          .toLowerCase()
+                          .contains(searchString)
+                      ? ListTile(
+                          leading: Icon(Icons.train),
+                          title: Text(allLines[index]['ref']),
+                          onTap: () => {
+                            comments.add({
+                              'lines': linesid[index],
+                              'user': widget.idUser,
+                            }).then((value) => {
+                                  post.update({
+                                    'comments': [...widget.c, value.id]
+                                  })
+                                }),
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => FeedPublication(
+                                        emailUser: widget.emailUser,
+                                        nameUser: widget.nameUser,
+                                        photoUrlUser: widget.photoUrlUser,
+                                        idUser: widget.idUser))),
+                          },
+                        )
+                      : Container();
                 }),
               );
             }
@@ -248,5 +382,4 @@ class _CommentState extends State<Comment> {
       ]),
     );
   }
-
 }
