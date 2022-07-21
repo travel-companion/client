@@ -5,11 +5,9 @@ import '../../comment.dart';
 import 'dart:developer';
 
 
-DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
-
 @override
 Widget CardItemTest(
-    dynamic time,
+    String time,
     dynamic content,
     dynamic user, 
     List<dynamic> comments,
@@ -39,7 +37,7 @@ Widget CardItemTest(
                 ),
               ),
               subtitle: Text(
-                time.toString(),
+                time,
                 style: TextStyle(
                   color: Color.fromARGB(255, 118, 113, 113),
                 ),

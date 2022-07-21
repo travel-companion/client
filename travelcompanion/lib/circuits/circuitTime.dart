@@ -127,7 +127,6 @@ class _CircuitTimeState extends State<CircuitTime> {
                                 String chatRoom =
                                     value['ref'] + value['times'][index]['t'];
                                 var roomNameDesu = value['ref'];
-                                log('test:$chatRoom');
                                 addCircuit(chatRoom);
                                 loggedUser();
                                 addChat(chatRoom);

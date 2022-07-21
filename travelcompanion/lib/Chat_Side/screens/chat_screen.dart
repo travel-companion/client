@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:travelcompanion/userProfil/userProfil.dart';
-
+import 'package:getwidget/getwidget.dart';
 import '../pages/calls_page.dart';
 import '../pages/contacts_page.dart';
 import '../pages/messages_page.dart';
@@ -21,7 +21,7 @@ class ChatHome extends StatelessWidget {
   final ValueNotifier<int> pageIndex = ValueNotifier(0);
   late ValueNotifier<String> title = ValueNotifier(roomNameDesu);
 
-  late var pageTitles = [roomNameDesu, 'Report Incident', 'Calls', 'Map'];
+  late var pageTitles = [roomNameDesu, 'Report Incident', 'Taxi', 'Map'];
 
   loggedUser() async {
     final user = FirebaseAuth.instance.currentUser!;
@@ -33,7 +33,6 @@ class ChatHome extends StatelessWidget {
       _name = value.data()!['name'];
       _photoUrl = value.data()!['photoUrl'];
     });
-    log(_photoUrl.toString());
   }
 
   void _onNavigationItemSelected(i) {
@@ -48,9 +47,13 @@ class ChatHome extends StatelessWidget {
       MessagesPage(
         roomNameDesu: roomNameDesu,
       ),
-      ReportPage(roomNameDesu: roomNameDesu,),
+      ReportPage(
+        roomNameDesu: roomNameDesu,
+      ),
       const CallsPage(),
-      const ContactsPage(),
+       ContactsPage(
+        roomNameDesu: roomNameDesu,
+      ),
     ];
     return FutureBuilder(
       future: loggedUser(),
@@ -78,7 +81,6 @@ class ChatHome extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: BackButton(
                   onPressed: () {
-                    log('value$roomNameDesu');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -89,11 +91,6 @@ class ChatHome extends StatelessWidget {
                     );
                   },
                 ),
-                // child: IconBackground(
-                //     icon: Icons.search,
-                //     onTap: () {
-                //       print('SEARCH');
-                //     }),
               ),
               actions: [
                 //Own avatar icon
@@ -163,8 +160,8 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
             _NavigationBarItem(
               onTap: handleItemSelected,
               index: 2,
-              lable: 'Calls',
-              icon: CupertinoIcons.phone_fill,
+              lable: 'Taxi',
+              icon: CupertinoIcons.car_fill,
               isSelected: (selectedIndex == 2),
             ),
             _NavigationBarItem(

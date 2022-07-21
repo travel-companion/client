@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'clipper.dart';
@@ -9,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as Path;
+import 'package:getwidget/getwidget.dart';
 
 class StackContainer extends StatefulWidget {
   @override
@@ -51,7 +53,10 @@ class _StackContainerState extends State<StackContainer> {
                       future: _fetch(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState != ConnectionState.done) {
-                          return const Text("Loading data...Please wait");
+                          return const GFLoader(
+                      type: GFLoaderType.android,
+                      size:GFSize.MEDIUM,
+                     );
                         }
                         return Text(
                           " $_name",
@@ -65,7 +70,10 @@ class _StackContainerState extends State<StackContainer> {
                       future: _fetch(),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState != ConnectionState.done) {
-                          return const Text("Loading data...Please wait");
+                          return const GFLoader(
+                      type: GFLoaderType.android,
+                      size:GFSize.MEDIUM,
+                     );
                         }
                         return Text(
                           " $_email",
@@ -97,7 +105,7 @@ class _StackContainerState extends State<StackContainer> {
     //     String newImg = _photoUrl!;
     //   }
     // }
-
+    log(_photoUrl.toString());
     return Center(
       child: Stack(children: <Widget>[
         CircleAvatar(
@@ -117,7 +125,7 @@ class _StackContainerState extends State<StackContainer> {
                 //     fit: BoxFit.fill,
                 //   )
                 : Image.network(
-                    'https://previews.123rf.com/images/carynpereira/carynpereira1102/carynpereira110200022/8886088-zebra-face.jpg',
+                    'https://image.shutterstock.com/image-vector/profile-placeholder-image-gray-silhouette-600w-1637863831.jpg',
                     fit: BoxFit.fill,
                   ),
           )),
@@ -155,19 +163,7 @@ class _StackContainerState extends State<StackContainer> {
             ),
           ),
         ),
-        Positioned(
-          bottom: 20.0,
-          left: 1.0,
-          child: RaisedButton(
-            onPressed: () {
-              uploadImageToFirebase(context);
-            },
-            child: const Text(
-              'Submit',
-              style: TextStyle(color: Colors.white, fontSize: 10.0),
-            ),
-          ),
-        ),
+       
       ]),
     );
   }
@@ -213,17 +209,21 @@ class _StackContainerState extends State<StackContainer> {
   }
 
   Future getImageGallery() async {
-    var image = await imagePicker.getImage(source: ImageSource.gallery);
-    setState(() {
-      _imageFile = File(image!.path);
+     await imagePicker.getImage(source: ImageSource.gallery).then((value){
+      setState(() {
+      _imageFile = File(value!.path);
     });
+     });
+    
   }
 
   Future getImageCamera() async {
-    var image = await imagePicker.getImage(source: ImageSource.camera);
+    await imagePicker.getImage(source: ImageSource.camera).then((value){
     setState(() {
-      _imageFile = File(image!.path);
+      _imageFile = File(value!.path);
     });
+    });
+    
   }
 
   Future uploadImageToFirebase(BuildContext context) async {
@@ -231,12 +231,16 @@ class _StackContainerState extends State<StackContainer> {
     Reference firebaseStorageRef =
         FirebaseStorage.instance.ref().child('uploads/$fileName');
     UploadTask uploadTask = firebaseStorageRef.putFile(_imageFile!);
-    TaskSnapshot taskSnapshot = await uploadTask;
-    _photoUrl = await (taskSnapshot).ref.getDownloadURL();
-    await FirebaseFirestore.instance
+     await uploadTask.then((value) async{
+      _photoUrl = await (value).ref.getDownloadURL();
+          await FirebaseFirestore.instance
         .collection("UserData/")
         .doc(_uid)
-        .update({"photoUrl": _photoUrl});
+        .update({"photoUrl": _photoUrl}).then((value) => {
+          setState(() {})
+        });
+    });
+    
   }
 
   _fetch() async {
@@ -249,7 +253,7 @@ class _StackContainerState extends State<StackContainer> {
       _email = ds.data()!['email'];
       _name = ds.data()!['name'];
       _uid = ds.data()!['uid'];
-      print(_email);
+      _photoUrl=ds.data()!['photoUrl'];
     }).catchError((e) {
       print(e);
     });

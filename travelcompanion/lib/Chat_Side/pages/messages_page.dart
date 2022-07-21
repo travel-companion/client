@@ -1,13 +1,14 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:badges/badges.dart';
 import '../themes.dart';
 import '../widgets/avatar.dart';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import 'package:faker/faker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:getwidget/getwidget.dart';
 
 class MessagesPage extends StatefulWidget {
   final roomNameDesu;
@@ -66,49 +67,57 @@ class _MessagesPageState extends State<MessagesPage> {
                   }
 
                   if (snapshot.hasData && !snapshot.data!.exists) {
-                    return Text("");
+                    const GFLoader(
+                      type: GFLoaderType.android,
+                      size: GFSize.MEDIUM,
+                    );
                   }
 
                   if (snapshot.connectionState == ConnectionState.done) {
                     Map<String, dynamic> data =
                         snapshot.data?.data() as Map<String, dynamic>;
 
-                    return data["alert"]!="NO INCIDENT"?
-                      Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 0.0, vertical: 0.0),
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                const SizedBox(width: 15.0),
-                                Row(
+                    return data["alert"] != "NO INCIDENT"
+                        ? Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 0.0),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 0.0, vertical: 0.0),
+                                child: Row(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
+                                        CrossAxisAlignment.center,
                                     children: <Widget>[
-                                      const Padding(
-                                        padding: EdgeInsets.only(right: 8.0),
-                                        child: Icon(Icons.bus_alert_rounded,
-                                            color: Colors.red),
-                                      ),
-                                      const SizedBox(height: 1.0),
-                                      Text(
-                                        data["alert"],
-                                        style: TextStyle(
-                                          foreground: Paint()
-                                            ..color = Colors.red,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15.0,
-                                        ),
-                                      )
+                                      const SizedBox(width: 15.0),
+                                      Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            const Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 8.0),
+                                              child: Icon(
+                                                  Icons.bus_alert_rounded,
+                                                  color: Colors.red),
+                                            ),
+                                            const SizedBox(height: 1.0),
+                                            Text(
+                                              data["alert"],
+                                              style: TextStyle(
+                                                foreground: Paint()
+                                                  ..color = Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15.0,
+                                              ),
+                                            )
+                                          ]),
                                     ]),
-                              ]),
-                        ),
-                      ),
-                    ):Text("");
+                              ),
+                            ),
+                          )
+                        : Text("");
                   }
                   return Text("");
                 },
@@ -138,7 +147,6 @@ class _MessagesPageState extends State<MessagesPage> {
                     );
                   }
                   final data = snapshot.requireData;
-                  // log(data.size.toString());
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(_delegate,
                         childCount: data.size),
@@ -192,17 +200,9 @@ class _MessagesPageState extends State<MessagesPage> {
             return const Text("error");
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text("waiting");
+            return const GFLoader();
           }
           final data = snapshot.requireData;
-          // dynamic chatRoom;
-          // for (var i = 0; i < data.size; i++) {
-          //   if (data.docs[i].id == widget.roomNameDesu) {
-          //     chatRoom = data.docs[i].data();
-          //     size = chatRoom['messages'].length;
-          //   }
-          // }
-          // log(index.toString());
           return _MessageTitle(
             messageData: MessageData(
               senderName: data.docs[index]['user'],
@@ -316,11 +316,8 @@ class _Stories extends StatelessWidget {
         .get()
         .then((value) {
       {
-        print(value.data()?['activeUsers']);
         value.data()?['activeUsers'].forEach((val) {
-          // log(val.toString());
           membersList.add(val);
-          log(membersList[0]['photoUrl']);
         });
       }
     });
@@ -360,9 +357,9 @@ class _Stories extends StatelessWidget {
                               width: 67,
                               child: _StoryCard(
                                 storyData: StoryData(
-                                  name: membersList[index]['name'],
-                                  url: membersList[index]['photoUrl'],
-                                ),
+                                    name: membersList[index]['name'],
+                                    url: membersList[index]['photoUrl'],
+                                    uid: membersList[index]['uid']),
                               ),
                             ),
                           );
@@ -387,11 +384,52 @@ class _StoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log(storyData.uid);
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Avatar.medium(url: storyData.url),
+        FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance
+              .collection("UserData")
+              .doc(storyData.uid)
+              .get(),
+          builder:
+              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return Text("Something went wrong");
+            }
+
+            if (snapshot.hasData && !snapshot.data!.exists) {
+              return Text("Document does not exist");
+            }
+
+            if (snapshot.connectionState == ConnectionState.done) {
+              Map<String, dynamic> data =
+                  snapshot.data!.data() as Map<String, dynamic>;
+              if (data["reviews"] == null || data["reviews"]["count"] == 0) {
+                return Badge(
+                  badgeColor: Colors.grey,
+                  child: Avatar.medium(url: storyData.url),
+                );
+              }
+              else if(data["reviews"]["count"] > 0){
+                return Badge(
+                  badgeColor: Colors.green,
+                  child: Avatar.medium(url: storyData.url),
+                );
+              }
+              else{
+                return Badge(
+                  badgeColor: Colors.red,
+                  child: Avatar.medium(url: storyData.url),
+                ); 
+              }
+            }
+
+            return Text("loading");
+          },
+        ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 14.0),
